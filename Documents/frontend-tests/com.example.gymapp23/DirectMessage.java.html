@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DirectMessage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">DirectMessage.java</span></div><h1>DirectMessage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.gymapp23.databinding.ActivityDirectMessageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.w3c.dom.Text;
+
+
+<span class="fc" id="L29">public class DirectMessage extends AppCompatActivity implements WebSocketListener{</span>
+
+    //private String BASE_URL = &quot;ws://10.0.2.2:8080/chat/&quot;;
+    ///chat/{username}/DM/{recipient}
+<span class="fc" id="L33">    private String BASE_URL = &quot;ws://coms-309-067.class.las.iastate.edu:8080/chat/&quot;;</span>
+    //private String BASE_URL = &quot;ws://localhost:8080/chat/&quot;;
+    private Button sendBtn;
+    private EditText usernameEtx, msgEtx;
+    private TextView msgTv;
+
+    private Button homeBtn;
+
+    private ActivityDirectMessageBinding binding;
+    /**
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  &lt;b&gt;&lt;i&gt;Note: Otherwise it is null.&lt;/i&gt;&lt;/b&gt;
+     *
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L51">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L52">        binding = ActivityDirectMessageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L53">        setContentView(binding.getRoot());</span>
+<span class="fc" id="L54">        Intent intent = getIntent();</span>
+        //connect to the other user
+        //String serverUrl = BASE_URL + usernameEtx.getText().toString();
+<span class="fc" id="L57">        String serverUrl = BASE_URL + intent.getStringExtra(&quot;username&quot;) + &quot;/DM/&quot; + intent.getStringExtra(&quot;other_username&quot;);</span>
+
+        // Establish WebSocket connection and set listener
+<span class="fc" id="L60">        WebSocketManager.getInstance().connectWebSocket(serverUrl);</span>
+<span class="fc" id="L61">        WebSocketManager.getInstance().setWebSocketListener(DirectMessage.this);</span>
+
+//        Button sendDMBtn = findViewById(R.id.sendDMBtn);
+//        EditText userMsgETxt = findViewById(R.id.userMsgEtx);
+//        TextView messageBoard = findViewById(R.id.messagesTxt_DM);
+<span class="fc" id="L66">        TextView chattingWithTxt = findViewById(R.id.chattingWithTxt);</span>
+
+<span class="fc" id="L68">        chattingWithTxt.setText(&quot;chatting with: &quot; + intent.getStringExtra(&quot;other_username&quot;));</span>
+
+        /* initialize UI elements */
+<span class="fc" id="L71">        sendBtn = (Button) findViewById(R.id.sendDMBtn);</span>
+        //usernameEtx = (EditText) findViewById(R.id.messagesTxt_DM);
+<span class="fc" id="L73">        msgEtx = (EditText) findViewById(R.id.userMsgEtx);</span>
+<span class="fc" id="L74">        msgTv = (TextView) findViewById(R.id.messagesTxt_DM);</span>
+
+
+        /* send button listener */
+<span class="fc" id="L78">        sendBtn.setOnClickListener(v -&gt; {</span>
+            try {
+
+                // send message
+<span class="fc" id="L82">                WebSocketManager.getInstance().sendMessage(msgEtx.getText().toString());</span>
+<span class="nc" id="L83">            } catch (Exception e) {</span>
+<span class="nc" id="L84">                Log.d(&quot;ExceptionSendMessage:&quot;, e.getMessage().toString());</span>
+<span class="fc" id="L85">            }</span>
+<span class="fc" id="L86">        });</span>
+<span class="fc" id="L87">        homeBtn = findViewById(R.id.dmToHomeBtn);</span>
+<span class="fc" id="L88">        homeBtn.setOnClickListener(new View.OnClickListener() {</span>
+            /**
+             *
+             * @param v The view that was clicked.
+             */
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L95">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L96">                Intent i = new Intent(DirectMessage.this, HomePage.class);</span>
+<span class="fc" id="L97">                i.putExtra(&quot;username&quot;, intent.getStringExtra(&quot;username&quot;).toString());</span>
+<span class="fc" id="L98">                startActivity(i);</span>
+<span class="fc" id="L99">                finish();</span>
+<span class="fc" id="L100">            }</span>
+        });
+<span class="fc" id="L102">    }</span>
+
+    /**
+     *
+     * @param message The received WebSocket message.
+     */
+    @Override
+    public void onWebSocketMessage(String message) {
+        /**
+         * In Android, all UI-related operations must be performed on the main UI thread
+         * to ensure smooth and responsive user interfaces. The 'runOnUiThread' method
+         * is used to post a runnable to the UI thread's message queue, allowing UI updates
+         * to occur safely from a background or non-UI thread.
+         */
+<span class="fc" id="L116">        runOnUiThread(() -&gt; {</span>
+<span class="fc" id="L117">            String s = msgTv.getText().toString();</span>
+<span class="fc" id="L118">            msgTv.setText(s + &quot;\n&quot;+message);</span>
+<span class="fc" id="L119">        });</span>
+<span class="fc" id="L120">    }</span>
+
+    /**
+     *
+     * @param code   The status code indicating the reason for closure.
+     * @param reason A human-readable explanation for the closure.
+     * @param remote Indicates whether the closure was initiated by the remote endpoint.
+     */
+
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        String closedBy = remote ? &quot;server&quot; : &quot;local&quot;;</span>
+<span class="fc" id="L132">        runOnUiThread(() -&gt; {</span>
+<span class="fc" id="L133">            String s = msgTv.getText().toString();</span>
+<span class="fc" id="L134">            msgTv.setText(s + &quot;---\nconnection closed by &quot; + closedBy + &quot;\nreason: &quot; + reason);</span>
+<span class="fc" id="L135">        });</span>
+<span class="fc" id="L136">    }</span>
+
+    /**
+     *
+     * @param handshakedata Information about the server handshake.
+     */
+    @Override
+<span class="fc" id="L143">    public void onWebSocketOpen(ServerHandshake handshakedata) {}</span>
+
+    /**
+     *
+     * @param ex The exception that describes the error.
+     */
+    @Override
+<span class="nc" id="L150">    public void onWebSocketError(Exception ex) {}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

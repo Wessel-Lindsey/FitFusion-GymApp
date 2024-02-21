@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PostWorkout.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">PostWorkout.java</span></div><h1>PostWorkout.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Switch;
+import android.widget.TextView;
+import com.android.volley.toolbox.StringRequest;
+//import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.Locale;
+
+<span class="fc" id="L40">public class PostWorkout extends AppCompatActivity {</span>
+    LinearLayout layout;
+    private Button homeBtn, trackWorkoutBtn, routine;
+<span class="fc" id="L43">    private Dictionary dict= new Hashtable&lt;String, RSW&gt;();</span>
+    private ArrayList&lt;String&gt; workoutViewList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L48">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L49">        setContentView(R.layout.activity_post_workout);</span>
+
+<span class="fc" id="L51">        homeBtn = findViewById(R.id.workoutsToHomeBtn);</span>
+<span class="fc" id="L52">        trackWorkoutBtn = findViewById(R.id.trackWorkoutBtn);</span>
+<span class="fc" id="L53">        layout = findViewById(R.id.container);</span>
+<span class="fc" id="L54">        routine = findViewById(R.id.routine);</span>
+<span class="fc" id="L55">        workoutViewList = new ArrayList&lt;&gt;();</span>
+        //load user data
+
+<span class="fc" id="L58">        int year = Integer.parseInt( new SimpleDateFormat(&quot;yyyy&quot;, Locale.getDefault()).format(new Date()) );</span>
+<span class="fc" id="L59">        int month = Integer.parseInt( new SimpleDateFormat(&quot;MM&quot;, Locale.getDefault()).format(new Date()) );</span>
+<span class="fc" id="L60">        int day = Integer.parseInt( new SimpleDateFormat(&quot;dd&quot;, Locale.getDefault()).format(new Date()) );</span>
+
+
+<span class="fc" id="L63">        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot; + getIntent().getStringExtra(&quot;username&quot;) + &quot;/workouts&quot;, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+                try{
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                    for(int i = 0; i &lt; response.length(); i++){</span>
+                        try{
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">                            if(response.getString(i) != &quot;&quot;){</span>
+<span class="fc" id="L70">                                addCard(response.getString(i));</span>
+                            }
+<span class="nc" id="L72">                        }catch (JSONException e) {</span>
+<span class="nc" id="L73">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L74">                        }</span>
+                    }
+<span class="nc" id="L76">                }catch (Error e){</span>
+<span class="fc" id="L77">                }</span>
+<span class="fc" id="L78">            }</span>
+<span class="fc" id="L79">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+//                Toast.makeText(PostWorkout.this, &quot;Error getting User details&quot;, Toast.LENGTH_LONG).show();
+<span class="nc" id="L83">            }</span>
+        });
+        RequestQueue requestQueue;
+<span class="fc" id="L86">        requestQueue = Volley.newRequestQueue(PostWorkout.this);</span>
+<span class="fc" id="L87">        requestQueue.add(jsonArrayRequest);</span>
+
+<span class="fc" id="L89">        trackWorkoutBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L92">                StringRequest stringRequest = new StringRequest(Request.Method.POST, &quot;http://coms-309-067.class.las.iastate.edu:8080/wsessions/&quot; + getIntent().getStringExtra(&quot;username&quot;)+&quot;/&quot;+ year +&quot;/&quot;+ month +&quot;/&quot;+ day +&quot;/new&quot;, new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">                        for(String name : workoutViewList){</span>
+                            try {
+<span class="fc" id="L97">                                JSONObject json = new JSONObject();</span>
+<span class="fc" id="L98">                                json.put(&quot;name&quot;,    name);</span>
+<span class="fc" id="L99">                                json.put(&quot;sets&quot;,    ((RSW)(dict.get(name))).set);</span>
+<span class="fc" id="L100">                                json.put(&quot;reps&quot;,    ((RSW)(dict.get(name))).rep);</span>
+<span class="fc" id="L101">                                json.put(&quot;weight&quot;,  ((RSW)(dict.get(name))).weight);</span>
+<span class="fc" id="L102">                                Log.d(&quot;SRW&quot;,</span>
+<span class="fc" id="L103">                                           &quot;sets&quot; + ((RSW)(dict.get(name))).set +</span>
+<span class="fc" id="L104">                                                &quot; reps&quot; + ((RSW)(dict.get(name))).rep +</span>
+<span class="fc" id="L105">                                                &quot;weight&quot; + ((RSW)(dict.get(name))).weight</span>
+                                        );
+
+
+<span class="fc" id="L109">                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest</span>
+<span class="fc" id="L110">                                        (Request.Method.POST, &quot;http://coms-309-067.class.las.iastate.edu:8080/wsessions/&quot; +  getIntent().getStringExtra(&quot;username&quot;)+&quot;/&quot;+ year +&quot;/&quot;+ month +&quot;/&quot;+ day, json, new Response.Listener&lt;JSONObject&gt;() {</span>
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+<span class="nc" id="L113">                                                Log.d(&quot;Posting workout&quot;, &quot;&quot;+name);</span>
+<span class="nc" id="L114">                                            }</span>
+<span class="fc" id="L115">                                        }, new Response.ErrorListener() {</span>
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+//                                                Toast.makeText(PostWorkout.this, &quot;Error Posting Workout details&quot;, Toast.LENGTH_LONG).show();
+<span class="fc" id="L119">                                            }</span>
+                                        });
+
+                                RequestQueue rq;
+<span class="fc" id="L123">                                rq = Volley.newRequestQueue(PostWorkout.this);</span>
+<span class="fc" id="L124">                                rq.add(jsonObjectRequest);</span>
+<span class="nc" id="L125">                            } catch (JSONException e) {</span>
+<span class="nc" id="L126">                                throw new RuntimeException(e);</span>
+<span class="fc" id="L127">                            }</span>
+<span class="fc" id="L128">                        }</span>
+
+<span class="fc" id="L130">                    }</span>
+<span class="fc" id="L131">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+<span class="nc" id="L135">                    }</span>
+                });
+                RequestQueue requestQueue;
+<span class="fc" id="L138">                requestQueue = Volley.newRequestQueue(PostWorkout.this);</span>
+<span class="fc" id="L139">                requestQueue.add(stringRequest);</span>
+<span class="fc" id="L140">            }</span>
+        });
+<span class="fc" id="L142">        homeBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L145">                Intent i = new Intent(PostWorkout.this, HomePage.class);</span>
+<span class="fc" id="L146">                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L147">                startActivity(i);</span>
+<span class="fc" id="L148">                finish();</span>
+<span class="fc" id="L149">            }</span>
+        });
+<span class="fc" id="L151">        routine.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L154">                Intent i = new Intent(PostWorkout.this, PostRoutines.class);</span>
+<span class="fc" id="L155">                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L156">                startActivity(i);</span>
+<span class="fc" id="L157">                finish();</span>
+<span class="fc" id="L158">            }</span>
+        });
+<span class="fc" id="L160">    }</span>
+
+    private static JSONObject findMaxID(JSONArray arr) {
+<span class="nc" id="L163">        int maxID, curID, index = 0;</span>
+        try {
+<span class="nc" id="L165">            JSONObject max = arr.getJSONObject(0);</span>
+<span class="nc" id="L166">            maxID = max.getInt(&quot;id&quot;);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">            for (int i = 1; i &lt; arr.length(); i++) {</span>
+<span class="nc" id="L168">                curID = arr.getJSONObject(i).getInt(&quot;id&quot;);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                if (curID &gt; maxID) {</span>
+<span class="nc" id="L170">                    maxID = curID;</span>
+<span class="nc" id="L171">                    index = i;</span>
+                }
+            }
+
+<span class="nc" id="L175">            return arr.getJSONObject(index);</span>
+<span class="nc" id="L176">        } catch (JSONException e) {</span>
+<span class="nc" id="L177">            throw new RuntimeException(e);</span>
+        }
+
+    }
+    private void addCard(String name){
+<span class="fc" id="L182">        View view = getLayoutInflater().inflate(R.layout.workout_box, null);</span>
+<span class="fc" id="L183">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L184">        nameView.setText(name);</span>
+<span class="fc" id="L185">        EditText workout = view.findViewById(R.id.workout);</span>
+<span class="fc" id="L186">        EditText weight = view.findViewById(R.id.weight);</span>
+<span class="fc" id="L187">        EditText sets = view.findViewById(R.id.sets);</span>
+<span class="fc" id="L188">        EditText reps = view.findViewById(R.id.reps);</span>
+<span class="fc" id="L189">        Button btn = view.findViewById(R.id.btn);</span>
+<span class="fc" id="L190">        Switch s = view.findViewById(R.id.switchWorkout);</span>
+        //workoutViewList
+
+<span class="fc" id="L193">        dict.put(name, new RSW());</span>
+
+<span class="fc" id="L195">        ((ViewGroup) (workout).getParent()).removeView(workout);</span>
+<span class="fc" id="L196">        ((ViewGroup) (btn).getParent()).removeView(btn);</span>
+<span class="fc" id="L197">        reps.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+<span class="pc bpc" id="L200" title="1 of 4 branches missed.">                if(reps.getText().toString() != null &amp;&amp; !(reps.getText().toString()).isEmpty()) {</span>
+<span class="fc" id="L201">                    Log.d(&quot;REPS&quot;, &quot;&gt;&quot; + ((RSW) (dict.get(name))).rep);</span>
+<span class="fc" id="L202">                    ((RSW) (dict.get(name))).setRep(0);</span>
+<span class="fc" id="L203">                }else { Log.d(&quot;REPS&quot;, &quot;&gt; null&quot;); }</span>
+<span class="fc" id="L204">            }</span>
+            @Override
+<span class="fc" id="L206">            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}</span>
+            @Override
+            public void afterTextChanged(Editable editable) {
+<span class="pc bpc" id="L209" title="2 of 4 branches missed.">                if(reps.getText().toString() != null &amp;&amp; !(reps.getText().toString()).isEmpty()){</span>
+<span class="fc" id="L210">                    Log.d(&quot;REPS&quot;, &quot;&gt;&quot; + ((RSW) (dict.get(name))).rep);</span>
+<span class="fc" id="L211">                    ((RSW) (dict.get(name))).setRep( Integer.parseInt(reps.getText().toString()));</span>
+<span class="nc" id="L212">                }else { Log.d(&quot;REPS&quot;, &quot;&gt; null&quot;); }</span>
+<span class="fc" id="L213">            }</span>
+        });
+<span class="fc" id="L215">        sets.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+<span class="pc bpc" id="L218" title="2 of 4 branches missed.">                if(sets.getText().toString() != null &amp;&amp; !(sets.getText().toString()).isEmpty()) {</span>
+<span class="nc" id="L219">                    Log.d(&quot;SETS&quot;, &quot;&gt;&quot; + ((RSW) (dict.get(name))).set);</span>
+<span class="nc" id="L220">                    ((RSW) (dict.get(name))).setSet(0);</span>
+<span class="fc" id="L221">                }else { Log.d(&quot;SETS&quot;, &quot;&gt; null&quot;); }</span>
+<span class="fc" id="L222">            }</span>
+            @Override
+<span class="fc" id="L224">            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}</span>
+            @Override
+            public void afterTextChanged(Editable editable) {
+<span class="pc bpc" id="L227" title="2 of 4 branches missed.">                if(sets.getText().toString() != null &amp;&amp; !(sets.getText().toString()).isEmpty()){</span>
+<span class="fc" id="L228">                    Log.d(&quot;SETS&quot;, &quot;&gt;&quot; + ((RSW) (dict.get(name))).set);</span>
+<span class="fc" id="L229">                    ((RSW) (dict.get(name))).setSet( Integer.parseInt(sets.getText().toString()));</span>
+<span class="nc" id="L230">                }else { Log.d(&quot;SETS&quot;, &quot;&gt; null&quot;); }</span>
+<span class="fc" id="L231">            }</span>
+        });
+<span class="fc" id="L233">        weight.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+<span class="pc bpc" id="L236" title="1 of 4 branches missed.">                if(weight.getText().toString() != null &amp;&amp; !(weight.getText().toString()).isEmpty()) {</span>
+<span class="fc" id="L237">                    Log.d(&quot;WEIGHT&quot;, &quot;&gt;&quot; + ((RSW) (dict.get(name))).weight);</span>
+<span class="fc" id="L238">                    ((RSW) (dict.get(name))).setWeight(0);</span>
+<span class="fc" id="L239">                }else { Log.d(&quot;WEIGHT&quot;, &quot;&gt; null&quot;); }</span>
+<span class="fc" id="L240">            }</span>
+            @Override
+<span class="fc" id="L242">            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}</span>
+            @Override
+            public void afterTextChanged(Editable editable) {
+<span class="pc bpc" id="L245" title="2 of 4 branches missed.">                if(weight.getText().toString() != null &amp;&amp; !(weight.getText().toString()).isEmpty()){</span>
+<span class="fc" id="L246">                    Log.d(&quot;WEIGHT&quot;, &quot;&gt;&quot; + ((RSW) (dict.get(name))).weight);</span>
+<span class="fc" id="L247">                    ((RSW) (dict.get(name))).setWeight( Integer.parseInt(weight.getText().toString()));</span>
+<span class="nc" id="L248">                }else { Log.d(&quot;WEIGHT&quot;, &quot;&gt; null&quot;); }</span>
+<span class="fc" id="L249">            }</span>
+        });
+//        reps.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean b) {
+//                if(b){
+//                    if(reps.getText().toString() != null &amp;&amp; !(reps.getText().toString()).isEmpty()){
+//                        ((RSW) (dict.get(name))).setRep(0);
+////                        Toast.makeText(PostWorkout.this, &quot;&gt; &quot;, Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//                if(!b){
+//                    if(reps.getText().toString() != null &amp;&amp; !(reps.getText().toString()).isEmpty()){
+//                        ((RSW) (dict.get(name))).setRep( Integer.parseInt(reps.getText().toString()));
+////                        Toast.makeText(PostWorkout.this, &quot;&lt; &quot; + reps.getText().toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }
+//        });
+//        sets.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean b) {
+//                if(b){
+//                    if(sets.getText().toString() != null &amp;&amp; !(sets.getText().toString()).isEmpty()){
+//                        ((RSW) (dict.get(name))).setSet(0);
+////                        Toast.makeText(PostWorkout.this, &quot;&gt; &quot; + sets.getText().toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//                if(!b){
+//                    if(sets.getText().toString() != null &amp;&amp; !(sets.getText().toString()).isEmpty()) {
+//                        ((RSW) (dict.get(name))).setSet(Integer.parseInt(sets.getText().toString()));
+////                        Toast.makeText(PostWorkout.this, &quot;&lt; &quot; + sets.getText().toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }
+//        });
+//        weight.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean b) {
+//                if(b){
+//                    if(workout.getText().toString() != null &amp;&amp; !(workout.getText().toString()).isEmpty()){
+//                        ((RSW) (dict.get(name))).setWeight(0);
+////                        Toast.makeText(PostWorkout.this, &quot;&gt; &quot; + weight.getText().toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//                if(!b){
+//                    if(workout.getText().toString() != null &amp;&amp; !(workout.getText().toString()).isEmpty()){
+//                        ((RSW) (dict.get(name))).setWeight( Integer.parseInt(reps.getText().toString()));
+////                        Toast.makeText(PostWorkout.this, &quot;&lt; &quot; + weight.getText().toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }
+//        });
+<span class="fc" id="L302">        s.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">                if(s.isChecked()){</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">                    if(! workoutViewList.contains( nameView.getText().toString() ) ) {</span>
+<span class="fc" id="L307">                        workoutViewList.add(nameView.getText().toString());</span>
+                    }
+                }
+                else{
+<span class="nc bnc" id="L311" title="All 2 branches missed.">                    if( workoutViewList.contains( nameView.getText().toString() ) ) {</span>
+<span class="nc" id="L312">                        workoutViewList.remove(nameView.getText().toString());</span>
+                    }
+                }
+<span class="fc" id="L315">            }</span>
+        });
+
+<span class="fc" id="L318">        layout.addView(view);</span>
+<span class="fc" id="L319">    }</span>
+    class RSW {
+        public int rep;
+        public int set;
+        public int weight;
+<span class="fc" id="L324">        public RSW(){</span>
+<span class="fc" id="L325">            this.rep = 0;</span>
+<span class="fc" id="L326">            this.set = 0;</span>
+<span class="fc" id="L327">            this.weight = 0;</span>
+<span class="fc" id="L328">        }</span>
+        public void setRep(int i){
+<span class="fc" id="L330">            rep = i;</span>
+<span class="fc" id="L331">        }</span>
+        public void setSet(int i){
+<span class="fc" id="L333">            set = i;</span>
+<span class="fc" id="L334">        }</span>
+        public void setWeight(int i){
+<span class="fc" id="L336">            weight = i;</span>
+<span class="fc" id="L337">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

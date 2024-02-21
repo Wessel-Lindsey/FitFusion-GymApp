@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BusinessSignup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">BusinessSignup.java</span></div><h1>BusinessSignup.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityBusinessSignupBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L24">public class BusinessSignup extends AppCompatActivity {</span>
+<span class="fc" id="L25">    public final String POSTBUSINESSURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/businesses&quot;;</span>
+    //public final String POSTBUSINESSURL = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/people/create&quot;; //mason postman link
+
+    private ActivityBusinessSignupBinding binding;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L31">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L32">        binding = ActivityBusinessSignupBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L33">        setContentView(binding.getRoot());</span>
+
+<span class="fc" id="L35">        Button toLoginBtn = findViewById(R.id.businessSignupToLoginPageBtn);</span>
+<span class="fc" id="L36">        Button createBusiness = findViewById(R.id.createBusinessAccountBtn);</span>
+
+<span class="fc" id="L38">        EditText businessName = findViewById(R.id.businessNameETxt);</span>
+<span class="fc" id="L39">        EditText password = findViewById(R.id.passwordBusinessETxt);</span>
+<span class="fc" id="L40">        EditText city = findViewById(R.id.businessCityETxt);</span>
+<span class="fc" id="L41">        EditText zip = findViewById(R.id.businessStateETxt);</span>
+<span class="fc" id="L42">        EditText address = findViewById(R.id.businessAddressETxt);</span>
+
+        //final String URL = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/people/create?username&amp;password&quot;;
+        //final String URL = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/people/create&quot;;
+
+<span class="fc" id="L47">        createBusiness.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+                try {
+                    //post request
+<span class="fc" id="L52">                    JSONObject json = new JSONObject();</span>
+<span class="fc" id="L53">                    json.put(&quot;businessName&quot;, businessName.getText().toString());</span>
+<span class="fc" id="L54">                    json.put(&quot;address&quot;, address.getText().toString());</span>
+<span class="fc" id="L55">                    json.put(&quot;zipcode&quot;, zip.getText().toString());</span>
+<span class="fc" id="L56">                    json.put(&quot;city&quot;, city.getText().toString());</span>
+
+                    //json.put(&quot;password&quot;, password.getText().toString());
+
+<span class="fc" id="L60">                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, POSTBUSINESSURL, json, new Response.Listener&lt;JSONObject&gt;() {</span>
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+<span class="nc" id="L64">                                Toast.makeText(BusinessSignup.this, &quot;Business Created&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L65">                                Toast.makeText(BusinessSignup.this, response.toString(),</span>
+<span class="nc" id="L66">                                        Toast.LENGTH_LONG).show();</span>
+
+<span class="nc" id="L68">                                Intent intent = new Intent(BusinessSignup.this, BusinessLogin.class);</span>
+<span class="nc" id="L69">                                startActivity(intent);</span>
+<span class="nc" id="L70">                                finish();</span>
+<span class="nc" id="L71">                            } catch (Exception e) {</span>
+<span class="nc" id="L72">                                e.printStackTrace();</span>
+<span class="nc" id="L73">                            }</span>
+<span class="nc" id="L74">                        }</span>
+<span class="fc" id="L75">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L78">                            Toast.makeText(BusinessSignup.this, &quot;error&quot;,</span>
+<span class="fc" id="L79">                                    Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L80">                        }</span>
+                    });
+
+                    RequestQueue requestQueue;
+<span class="fc" id="L84">                    requestQueue = Volley.newRequestQueue(BusinessSignup.this);</span>
+<span class="fc" id="L85">                    requestQueue.add(request);</span>
+                }
+<span class="nc" id="L87">                catch (JSONException e) {</span>
+<span class="nc" id="L88">                    e.printStackTrace();</span>
+<span class="fc" id="L89">                }</span>
+
+
+<span class="fc" id="L92">            }</span>
+        });
+<span class="fc" id="L94">        toLoginBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L97">                Intent intent = new Intent(BusinessSignup.this, BusinessLogin.class);</span>
+<span class="nc" id="L98">                startActivity(intent);</span>
+<span class="nc" id="L99">                finish();</span>
+<span class="nc" id="L100">            }</span>
+        });
+<span class="fc" id="L102">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

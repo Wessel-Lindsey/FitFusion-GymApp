@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FriendRequestService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Friendships</a>
+</div>
+
+<h1>Coverage Summary for Class: FriendRequestService (com.example.fitfusion.Friendships)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FriendRequestService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (15/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Friendships;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class FriendRequestService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    FriendRequestRepository friendRequestRepository;
+&nbsp;
+&nbsp;    //cases:
+&nbsp;    //-they are friends already
+&nbsp;    //there is already a pending request in same direction
+&nbsp;    //there is pending request in opposite direction
+&nbsp;    //there are no requests
+&nbsp;    String handleFriendRequest(String person1, String person2) {
+<b class="fc">&nbsp;        Person sender = personRepository.findByUsername(person1);</b>
+<b class="fc">&nbsp;        Person receiver = personRepository.findByUsername(person2);</b>
+&nbsp;
+&nbsp;        //does this request exist already?
+<b class="fc">&nbsp;        if (friendRequestRepository.findBySenderAndReceiver(sender, receiver) != null) {</b>
+<b class="fc">&nbsp;            return person1 + &quot; already has a pending friend request to &quot; + person2 + &quot;!&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        //are they friends already?
+<b class="fc">&nbsp;        if (sender.getFriends().contains(receiver)) {</b>
+<b class="nc">&nbsp;            return person1 + &quot; is already friends with &quot; + person2 + &quot;!&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        //does the receiver have a pending request from sender?
+&nbsp;        //if so, they become friends
+<b class="fc">&nbsp;        if (friendRequestRepository.findBySenderAndReceiver(receiver, sender) != null) {</b>
+<b class="fc">&nbsp;            sender.addFriend(receiver);</b>
+<b class="fc">&nbsp;            receiver.addFriend(sender);</b>
+<b class="fc">&nbsp;            personRepository.save(sender);</b>
+<b class="fc">&nbsp;            personRepository.save(receiver);</b>
+&nbsp;            //remove dangling request from repository
+&nbsp;
+<b class="fc">&nbsp;            return person1 + &quot; is now friends with &quot; + person2 + &quot;!&quot;;</b>
+&nbsp;        }
+&nbsp;        //if we reach here, the only possible state is that this is a unique friend request
+<b class="fc">&nbsp;        FriendRequest friendRequest = new FriendRequest(sender, receiver);</b>
+<b class="fc">&nbsp;        friendRequestRepository.save(friendRequest);</b>
+<b class="fc">&nbsp;        return &quot;Created new friend request from &quot; + person1 + &quot; to &quot; + person2 + &quot;.&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

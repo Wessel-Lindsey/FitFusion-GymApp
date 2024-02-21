@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>challengesPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">challengesPage.java</span></div><h1>challengesPage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Html;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityChallengesPageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+<span class="fc" id="L33">public class challengesPage extends AppCompatActivity implements WebSocketListener{</span>
+    private EditText newChallengeUser;
+    private Button createChallenge, homebtn, encourageChallenge, trashtalkChallenge;
+    private RequestQueue requestQueue ;
+    private TextView showChallenges;
+    LinearLayout layout;
+//    String currentChallenges = &quot;&quot;;
+<span class="fc" id="L40">    String BASE_URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/&quot;;</span>
+<span class="fc" id="L41">    private String challengeURL = &quot;ws://coms-309-067.class.las.iastate.edu:8080/challengeChat/&quot;;</span>
+
+    private ActivityChallengesPageBinding binding;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L46">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L47">        binding = ActivityChallengesPageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L48">        setContentView(binding.getRoot());</span>
+<span class="fc" id="L49">        createChallenge    = (Button)   findViewById(R.id.createChallenge);</span>
+<span class="fc" id="L50">        homebtn            = (Button)   findViewById(R.id.homebtn);</span>
+<span class="fc" id="L51">        encourageChallenge = (Button)   findViewById(R.id.encourageChallenge);</span>
+<span class="fc" id="L52">        trashtalkChallenge = (Button)   findViewById(R.id.trashtalkChallenge);</span>
+<span class="fc" id="L53">        newChallengeUser   = (EditText) findViewById(R.id.newChallengeUser);</span>
+//        showChallenges     = (TextView) findViewById(R.id.showChallenges);
+<span class="fc" id="L55">        layout             =            findViewById(R.id.container);</span>
+<span class="fc" id="L56">        Intent intent = getIntent();</span>
+<span class="fc" id="L57">        String userName = intent.getStringExtra(&quot;username&quot;);</span>
+<span class="fc" id="L58">        requestQueue = Volley.newRequestQueue(challengesPage.this);</span>
+
+<span class="fc" id="L60">        WebSocketManager.getInstance().connectWebSocket(challengeURL + userName);</span>
+<span class="fc" id="L61">        WebSocketManager.getInstance().setWebSocketListener(challengesPage.this);</span>
+
+<span class="fc" id="L63">        JsonArrayRequest getToChallenges = new JsonArrayRequest(Request.Method.GET, BASE_URL + &quot;challenges/to/&quot; + (intent.getStringExtra(&quot;username&quot;)), null, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">                    if (response.length() == 0) {</span>
+<span class="nc" id="L68">                        Toast.makeText(challengesPage.this, &quot;no sent challenges &quot;, Toast.LENGTH_LONG).show();</span>
+//                        currentChallenges += (&quot;No TO Challenges&quot;);
+                    }
+                    else {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                        for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L73">                            JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L74">                            String status = object.getString(&quot;status&quot;);</span>
+<span class="fc" id="L75">                            int id = object.getInt(&quot;id&quot;);</span>
+<span class="fc" id="L76">                            String name = (object.getJSONObject(&quot;challenger&quot;)).getString(&quot;username&quot;);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">                            if(status.equals(&quot;PENDING&quot;)) {</span>
+<span class="fc" id="L78">                                addCardPending(&quot;from &quot; + name, id);</span>
+                            }
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">                            else if (status.equals(&quot;IN_PROGRESS&quot;)) {</span>
+<span class="fc" id="L81">                                addCardInProgress(&quot;from &quot; + name, id);</span>
+                            }
+//                            currentChallenges += &quot;\n\nSTATUS: &quot; + status + &quot; to &quot; + username;
+                        }
+                    }
+//                    showChallenges.setText(currentChallenges);
+<span class="nc" id="L87">                } catch (Exception e) {</span>
+                    //Toast.makeText(challengesPage.this, &quot;Error: &quot; + e.getMessage(), Toast.LENGTH_LONG).show();
+<span class="fc" id="L89">                }</span>
+<span class="fc" id="L90">            }</span>
+<span class="fc" id="L91">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(challengesPage.this, &quot;Error: &quot; + error.getMessage(), Toast.LENGTH_LONG).show();
+<span class="nc" id="L95">            }</span>
+        });
+
+<span class="fc" id="L98">        JsonArrayRequest getFromChallenges = new JsonArrayRequest(Request.Method.GET, BASE_URL + &quot;challenges/from/&quot; + (intent.getStringExtra(&quot;username&quot;)), null, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+
+            public void onResponse(JSONArray response) {
+                try {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">                    if (response.length() == 0) {</span>
+<span class="nc" id="L104">                        Toast.makeText(challengesPage.this, &quot;no FROM challenges&quot;, Toast.LENGTH_LONG).show();</span>
+                    } else {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">                        for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L107">                            JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L108">                            String status = object.getString(&quot;status&quot;);</span>
+<span class="fc" id="L109">                            int id = object.getInt(&quot;id&quot;);</span>
+<span class="fc" id="L110">                            String name = (object.getJSONObject(&quot;challengee&quot;)).getString(&quot;username&quot;);</span>
+//                            addCardPending(status + &quot; from&quot; + username);
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">                            if(status.equals(&quot;PENDING&quot;)) {</span>
+<span class="fc" id="L113">                                addCardWaiting(&quot;to &quot; + name, id);</span>
+                            }
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                            else if (status.equals(&quot;IN_PROGRESS&quot;)) {</span>
+<span class="nc" id="L116">                                addCardInProgress(&quot;to &quot; + name, id);</span>
+                            }
+                        }
+                    }
+//                    showChallenges.setText(currentChallenges);
+<span class="nc" id="L121">                } catch (JSONException e) {</span>
+//                    showChallenges.setText(&quot;Error IN: &quot; + e.toString());
+                    //Toast.makeText(challengesPage.this, &quot;Error: &quot; + e.toString(), Toast.LENGTH_LONG).show();
+<span class="fc" id="L124">                }</span>
+<span class="fc" id="L125">            }</span>
+<span class="fc" id="L126">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //Toast.makeText(challengesPage.this, &quot;Error: &quot; + error.getMessage(), Toast.LENGTH_LONG).show();
+//                showChallenges.setText(&quot;Error: &quot; + error.getMessage());
+<span class="nc" id="L131">            }</span>
+        });
+
+<span class="fc" id="L134">        requestQueue.add(getToChallenges);</span>
+<span class="fc" id="L135">        requestQueue.add(getFromChallenges);</span>
+
+<span class="fc" id="L137">        encourageChallenge.setOnClickListener(v -&gt; {</span>
+            try {
+<span class="fc" id="L139">                WebSocketManager.getInstance().sendMessage(&quot;!encourage&quot;);</span>
+<span class="nc" id="L140">            } catch (Exception e) {</span>
+<span class="nc" id="L141">                Log.d(&quot;ExceptionSendMessage:&quot;, e.getMessage().toString());</span>
+<span class="fc" id="L142">            }</span>
+<span class="fc" id="L143">        });</span>
+<span class="fc" id="L144">        trashtalkChallenge.setOnClickListener(v -&gt; {</span>
+            try {
+<span class="fc" id="L146">                WebSocketManager.getInstance().sendMessage(&quot;!trashtalk&quot;);</span>
+<span class="nc" id="L147">            } catch (Exception e) {</span>
+<span class="nc" id="L148">                Log.d(&quot;ExceptionSendMessage:&quot;, e.getMessage().toString());</span>
+<span class="fc" id="L149">            }</span>
+<span class="fc" id="L150">        });</span>
+<span class="fc" id="L151">        createChallenge.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                ///people/@/{username}/challenge/{username}
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">                if (newChallengeUser.getText().toString() != &quot;&quot;) {</span>
+                    try {
+<span class="fc" id="L157">                        JSONObject jsonPost = new JSONObject();</span>
+<span class="fc" id="L158">                        jsonPost.put(&quot;status&quot;, &quot;PENDING&quot;);</span>
+<span class="fc" id="L159">                        Toast.makeText(challengesPage.this, &quot;USER: &quot; + intent.getStringExtra(&quot;username&quot;) + &quot;/challenge/&quot; + (newChallengeUser.getText().toString()), Toast.LENGTH_LONG).show();</span>
+
+<span class="fc" id="L161">                        JsonObjectRequest postChallenge = new JsonObjectRequest(Request.Method.POST,</span>
+<span class="fc" id="L162">                                (BASE_URL + &quot;people/@/&quot; + intent.getStringExtra(&quot;username&quot;) + &quot;/challenge/&quot; + (newChallengeUser.getText().toString()))</span>
+<span class="fc" id="L163">                                , jsonPost, new Response.Listener&lt;JSONObject&gt;() {</span>
+                            @Override
+                            public void onResponse(JSONObject response) {
+<span class="fc" id="L166">                                Toast.makeText(challengesPage.this, &quot;Challenge sent!&quot;, Toast.LENGTH_LONG).show();</span>
+//                                addCardPending(&quot;STATUS: PENDING to &quot; + newChallengeUser.getText().toString(), );
+//                                currentChallenges += &quot;\n\nSTATUS: PENDING to &quot; + newChallengeUser.getText().toString();
+//                                showChallenges.setText(currentChallenges);
+<span class="fc" id="L170">                            }</span>
+<span class="fc" id="L171">                        }, new Response.ErrorListener() {</span>
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                //Toast.makeText(challengesPage.this, &quot;Error: &quot; + error.toString(), Toast.LENGTH_LONG).show();
+<span class="nc" id="L175">                            }</span>
+                        });
+<span class="fc" id="L177">                        requestQueue.add(postChallenge);</span>
+                        //                    requestQueue.add(postsGETRequest);
+<span class="nc" id="L179">                    } catch (Exception e) {</span>
+<span class="nc" id="L180">                        e.printStackTrace();</span>
+<span class="pc" id="L181">                    }</span>
+                } else {
+<span class="nc" id="L183">                    Toast.makeText(challengesPage.this, &quot;NO GIVEN USER!&quot;, Toast.LENGTH_LONG).show();</span>
+                }
+<span class="fc" id="L185">            }</span>
+        });
+<span class="fc" id="L187">        homebtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L190">                WebSocketManager.getInstance().disconnectWebSocket();</span>
+<span class="fc" id="L191">                Intent i = new Intent(challengesPage.this, HomePage.class);</span>
+<span class="fc" id="L192">                i.putExtra(&quot;username&quot;, intent.getStringExtra(&quot;username&quot;).toString());</span>
+<span class="fc" id="L193">                startActivity(i);</span>
+<span class="fc" id="L194">                finish();</span>
+<span class="fc" id="L195">            }</span>
+        });
+<span class="fc" id="L197">    }</span>
+    // homebtn.setText(&quot;here&quot;);
+    @Override
+    public void onWebSocketMessage(String message) {
+<span class="fc" id="L201">        runOnUiThread(() -&gt; {</span>
+//            String s = msgTv.getText().toString();
+<span class="fc" id="L203">            Toast.makeText(challengesPage.this, &quot;WS: &quot; + message , Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L204">        });</span>
+<span class="fc" id="L205">    }</span>
+    @Override
+    public void onWebSocketOpen(ServerHandshake handshakedata) {
+<span class="nc" id="L208">        Toast.makeText(challengesPage.this, &quot;WS: &quot; + &quot;---connection opened&quot;,  Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L209">    }</span>
+    @Override
+    public void onWebSocketClose(int code, String reason, boolean remote) {
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">        String closedBy = remote ? &quot;server&quot; : &quot;local&quot;;</span>
+<span class="fc" id="L213">        runOnUiThread(() -&gt; {</span>
+//            String s = msgTv.getText().toString();
+//            msgTv.setText(s + &quot;---\nconnection closed by &quot; + closedBy + &quot;\nreason: &quot; + reason);
+            //Toast.makeText(challengesPage.this, &quot;WS: &quot; + &quot;---\nconnection closed by &quot; + closedBy + &quot;\nreason: &quot; + reason , Toast.LENGTH_LONG).show();
+
+<span class="fc" id="L218">        });</span>
+<span class="fc" id="L219">    }</span>
+
+    @Override
+<span class="fc" id="L222">    public void onWebSocketError(Exception ex) {}</span>
+
+    private void addCardPending(String name, int id) {
+<span class="fc" id="L225">        View view = getLayoutInflater().inflate(R.layout.simple_box_2btn, null);</span>
+<span class="fc" id="L226">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L227">        Button btn1 = view.findViewById(R.id.btn1);</span>
+<span class="fc" id="L228">        Button btn2 = view.findViewById(R.id.btn2);</span>
+
+<span class="fc" id="L230">        nameView.setText(name);</span>
+<span class="fc" id="L231">        btn1.setText(&quot;O&quot;);</span>
+<span class="fc" id="L232">        btn1.setBackgroundColor(getResources().getColor(R.color.bright_green));</span>
+<span class="fc" id="L233">        btn2.setText(&quot;RED&quot;);</span>
+<span class="fc" id="L234">        btn2.setBackgroundColor(getResources().getColor(R.color.purple_200));</span>
+
+<span class="fc" id="L236">        btn1.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L239">                JsonArrayRequest sentAccept = new JsonArrayRequest(Request.Method.PUT, BASE_URL + &quot;challenges/&quot; + id + &quot;/accept&quot;, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+
+                    public void onResponse(JSONArray response) {
+<span class="nc" id="L243">                        Toast.makeText(challengesPage.this, &quot;Challenge Accepted&quot;,  Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L244">                    }</span>
+<span class="nc" id="L245">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(challengesPage.this, &quot;Error: &quot; + error.getMessage(), Toast.LENGTH_LONG).show();
+//                showChallenges.setText(&quot;Error: &quot; + error.getMessage());
+<span class="nc" id="L250">                    }</span>
+                });
+<span class="nc" id="L252">                requestQueue.add(sentAccept);</span>
+<span class="nc" id="L253">            }</span>
+        });
+<span class="fc" id="L255">        btn2.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L258">                JsonArrayRequest sentDecline = new JsonArrayRequest(Request.Method.DELETE, BASE_URL + &quot;challenges/&quot; + id + &quot;/decline&quot;, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+
+                    public void onResponse(JSONArray response) {
+//                        Toast.makeText(challengesPage.this, &quot;Challenge Declined&quot;,  Toast.LENGTH_LONG).show();
+<span class="nc" id="L263">                    }</span>
+<span class="nc" id="L264">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(challengesPage.this, &quot;Error: &quot; + error.getMessage(), Toast.LENGTH_LONG).show();
+<span class="nc" id="L268">                    }</span>
+                });
+<span class="nc" id="L270">                requestQueue.add(sentDecline);</span>
+<span class="nc" id="L271">            }</span>
+        });
+
+<span class="fc" id="L274">        layout.addView(view);</span>
+<span class="fc" id="L275">    }</span>
+    private void addCardInProgress(String name, int id) {
+<span class="fc" id="L277">        View view = getLayoutInflater().inflate(R.layout.simple_box, null);</span>
+<span class="fc" id="L278">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L279">        Button Complete = view.findViewById(R.id.followBTN);</span>
+        //  /challenges/{id}/accept, decline, complete
+<span class="fc" id="L281">        nameView.setText(name);</span>
+<span class="fc" id="L282">        Complete.setText(&quot;Complete&quot;);</span>
+<span class="fc" id="L283">        Complete.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L286">                JsonArrayRequest sentComplete = new JsonArrayRequest(Request.Method.DELETE, BASE_URL + &quot;challenges/&quot; + id + &quot;/complete&quot;, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+
+                    public void onResponse(JSONArray response) {
+//                        Toast.makeText(challengesPage.this, &quot;Challenge Completed&quot;,  Toast.LENGTH_LONG).show();
+<span class="nc" id="L291">                    }</span>
+<span class="nc" id="L292">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(challengesPage.this, &quot;Error: &quot; + error.getMessage(), Toast.LENGTH_LONG).show();
+<span class="nc" id="L296">                    }</span>
+                });
+<span class="nc" id="L298">                requestQueue.add(sentComplete);</span>
+<span class="nc" id="L299">            }</span>
+        });
+<span class="fc" id="L301">        layout.addView(view);</span>
+<span class="fc" id="L302">    }</span>
+    private void addCardWaiting(String name, int id) {
+<span class="fc" id="L304">        View view = getLayoutInflater().inflate(R.layout.simple_text_box, null);</span>
+<span class="fc" id="L305">        TextView nameView = view.findViewById(R.id.textView);</span>
+
+<span class="fc" id="L307">        nameView.setText(name);</span>
+<span class="fc" id="L308">        layout.addView(view);</span>
+<span class="fc" id="L309">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

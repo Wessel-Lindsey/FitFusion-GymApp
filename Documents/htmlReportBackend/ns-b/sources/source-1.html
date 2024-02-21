@@ -1,0 +1,237 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChallengeChat</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Websockets</a>
+</div>
+
+<h1>Coverage Summary for Class: ChallengeChat (com.example.fitfusion.Websockets)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChallengeChat</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.8%
+  </span>
+  <span class="absValue">
+    (5/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Websockets;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Hashtable;
+&nbsp;import java.util.LinkedList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Random;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Configurable;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.web.socket.server.standard.SpringConfigurator;
+&nbsp;
+&nbsp;import com.example.fitfusion.Challenge.Challenge;
+&nbsp;import com.example.fitfusion.Challenge.ChallengeRepository;
+&nbsp;import com.example.fitfusion.Challenge.Status;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;
+&nbsp;import jakarta.websocket.OnClose;
+&nbsp;import jakarta.websocket.OnMessage;
+&nbsp;import jakarta.websocket.OnOpen;
+&nbsp;import jakarta.websocket.Session;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@ServerEndpoint(value = &quot;/challengeChat/{username}&quot;, configurator = CustomSpringConfigurator.class)
+<b class="fc">&nbsp;public class ChallengeChat {</b>
+&nbsp;
+&nbsp;    // Store all socket session and their corresponding username.
+<b class="fc">&nbsp;    private static Map&lt;Session, String&gt; sessionUsernameMap = new Hashtable&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static Map&lt;String, Session&gt; usernameSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    String[] encouragements = {</b>
+&nbsp;            &quot;You&#39;re doing great! Keep it up!&quot;,
+&nbsp;            &quot;You&#39;re almost there! Keep your head up!&quot;,
+&nbsp;            &quot;Stay positive! You&#39;re almost finished with this challenge.&quot;,
+&nbsp;            &quot;Hard work is only going to make you stronger!&quot;,
+&nbsp;            &quot;I&#39;m so proud of you! Keep working hard!&quot;,
+&nbsp;            &quot;You got this! Don&#39;t give up now!&quot;
+&nbsp;    };
+&nbsp;
+<b class="fc">&nbsp;    String[] trashtalkings = {</b>
+&nbsp;            &quot;I knew I should have challenged someone stronger.&quot;,
+&nbsp;            &quot;Time&#39;s ticking.. What&#39;s taking so long?&quot;,
+&nbsp;            &quot;Hurry up and complete this challenge before I fall asleep.&quot;,
+&nbsp;            &quot;You need to step up your game buddy!&quot;,
+&nbsp;            &quot;You&#39;re lifting what, marshmellows?&quot;
+&nbsp;    };
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ChallengeRepository challengeRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;username&quot;) String username) throws IOException {
+&nbsp;        // Handle the case of a duplicate username
+<b class="nc">&nbsp;        if (usernameSessionMap.containsKey(username)) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;Username already exists&quot;);</b>
+<b class="nc">&nbsp;            session.close();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        else {
+&nbsp;            // map current session with username
+<b class="nc">&nbsp;            sessionUsernameMap.put(session, username);</b>
+&nbsp;
+&nbsp;            // map current username with session
+<b class="nc">&nbsp;            usernameSessionMap.put(username, session);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, String message) throws IOException {
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;        // get all challengees for this user and send them a message
+<b class="nc">&nbsp;        List&lt;String&gt; challengeeNames = new ArrayList&lt;String&gt;();</b>
+<b class="nc">&nbsp;        List&lt;Challenge&gt; sentChallenges = challengeRepository.getChallengesByChallenger(username);</b>
+<b class="nc">&nbsp;        for (Challenge challenge : sentChallenges) {</b>
+<b class="nc">&nbsp;            if (challenge.getStatus() == Status.IN_PROGRESS) {</b>
+<b class="nc">&nbsp;                String challengeeName = challenge.getChallengee().getUsername();</b>
+<b class="nc">&nbsp;                challengeeNames.add(challengeeName);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;        // send them a message!
+&nbsp;
+&nbsp;        String messageToSend;
+<b class="nc">&nbsp;        if (message.equals(&quot;!trashtalk&quot;)) {</b>
+<b class="nc">&nbsp;            int numPhrases = trashtalkings.length;</b>
+<b class="nc">&nbsp;            Random rand = new Random();</b>
+<b class="nc">&nbsp;            int index = rand.nextInt(numPhrases);</b>
+<b class="nc">&nbsp;            messageToSend = trashtalkings[index];</b>
+<b class="nc">&nbsp;        } else if (message.equals(&quot;!encourage&quot;)) {</b>
+<b class="nc">&nbsp;            int numPhrases = encouragements.length;</b>
+<b class="nc">&nbsp;            Random rand = new Random();</b>
+<b class="nc">&nbsp;            int index = rand.nextInt(numPhrases);</b>
+<b class="nc">&nbsp;            messageToSend = encouragements[index];</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            messageToSend = message;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        challengeeNames.forEach((challengee) -&gt; {</b>
+<b class="nc">&nbsp;            sendMessageToParticularUser(challengee, &quot;&lt;Challenger&gt; &quot; + username + &quot;: &quot; + messageToSend);</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session) throws IOException {
+&nbsp;
+&nbsp;        // get the username from session-username mapping
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+&nbsp;        // remove user from memory mappings
+<b class="nc">&nbsp;        sessionUsernameMap.remove(session);</b>
+<b class="nc">&nbsp;        usernameSessionMap.remove(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void sendMessageToParticularUser(String username, String message) {
+&nbsp;        // don&#39;t try sending a message to a user who isn&#39;t connected
+<b class="nc">&nbsp;        if (!usernameSessionMap.containsKey(username)) {</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;        try {
+<b class="nc">&nbsp;            usernameSessionMap.get(username).getBasicRemote().sendText(message);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;            // logger.info(&quot;[DM Exception] &quot; + e.getMessage());
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

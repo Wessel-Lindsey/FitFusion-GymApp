@@ -1,0 +1,180 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChallengeController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Challenge</a>
+</div>
+
+<h1>Coverage Summary for Class: ChallengeController (com.example.fitfusion.Challenge)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChallengeController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.3%
+  </span>
+  <span class="absValue">
+    (14/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Challenge;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.HttpStatusCode;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class ChallengeController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ChallengeRepository challengeRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private ChallengeService challengeService;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/challenges&quot;)
+&nbsp;    List&lt;Challenge&gt; listAllChallenges() {
+<b class="fc">&nbsp;        return challengeRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/challenges/{id}&quot;)
+&nbsp;    Challenge getAChallenge(@PathVariable int id) {
+<b class="fc">&nbsp;        return challengeRepository.findById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/challenges/from/{username}&quot;)
+&nbsp;    List&lt;Challenge&gt; getChallengesFrom(@PathVariable String username) {
+<b class="fc">&nbsp;        return challengeRepository.getChallengesByChallenger(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/challenges/to/{username}&quot;)
+&nbsp;    List&lt;Challenge&gt; getChallengesTo(@PathVariable String username) {
+<b class="nc">&nbsp;        return challengeRepository.getChallengesByChallengee(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/challenges/{id}/decline&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; declineChallenge(@PathVariable int id) {
+<b class="fc">&nbsp;        challengeService.declineChallenge(id);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(HttpStatus.NO_CONTENT);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;challenges/{id}/accept&quot;)
+&nbsp;    public ResponseEntity&lt;Challenge&gt; acceptChallenge(@PathVariable int id) {
+<b class="fc">&nbsp;        Challenge acceptedChallenge = challengeService.acceptChallenge(id);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;Challenge&gt;(acceptedChallenge, HttpStatus.CREATED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;challenges/{id}/complete&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; completeChallenge(@PathVariable int id) {
+<b class="fc">&nbsp;        challengeService.completeChallenge(id);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(HttpStatus.NO_CONTENT);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/people/@/{username}/challenge/{username2}&quot;)
+&nbsp;    ResponseEntity&lt;Challenge&gt; challengeUser(@PathVariable String username, @PathVariable String username2) {
+<b class="fc">&nbsp;        Person challenger = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        Person challengee = personRepository.findByUsername(username2);</b>
+<b class="fc">&nbsp;        Challenge createdChallenge = challengeService.createChallenge(challenger, challengee);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(createdChallenge, HttpStatus.CREATED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

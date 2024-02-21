@@ -1,0 +1,320 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PersonPostController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Post</a>
+</div>
+
+<h1>Coverage Summary for Class: PersonPostController (com.example.fitfusion.Post)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PersonPostController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70%
+  </span>
+  <span class="absValue">
+    (7/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    42%
+  </span>
+  <span class="absValue">
+    (37/88)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Post;
+&nbsp;
+&nbsp;import com.example.fitfusion.Business.Business;
+&nbsp;import com.example.fitfusion.Image.Image;
+&nbsp;import com.example.fitfusion.Image.ImageRepository;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class PersonPostController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonPostRepository personPostRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ImageRepository imageRepository;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/posts/people&quot;)
+&nbsp;    public List&lt;PersonPost&gt; getAllPosts()
+&nbsp;    {
+<b class="nc">&nbsp;        return personPostRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/posts/{username}/feed&quot;)
+&nbsp;    public List&lt;Post&gt; getUserFeed(@PathVariable String username)
+&nbsp;    {
+&nbsp;
+<b class="nc">&nbsp;        Person currentUser = personRepository.findByUsername(username);</b>
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;Person&gt; friends = currentUser.getFriends();</b>
+<b class="nc">&nbsp;        Business gym = currentUser.getMyGym();</b>
+&nbsp;
+<b class="nc">&nbsp;        ArrayList&lt;Post&gt; feed = new ArrayList&lt;Post&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(Person friend : friends)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            List&lt;PersonPost&gt; friendPosts = friend.getPersonPosts();</b>
+<b class="nc">&nbsp;            Post post1 = null;</b>
+<b class="nc">&nbsp;            Post post2 = null;</b>
+<b class="nc">&nbsp;            if(friendPosts.size() &gt;= 1) {</b>
+<b class="nc">&nbsp;                post1 = friendPosts.get(friendPosts.size() - 1);</b>
+<b class="nc">&nbsp;                if(post1 != null) feed.add(post1);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if(friendPosts.size() &gt;= 2){</b>
+<b class="nc">&nbsp;                post2 = friendPosts.get(friendPosts.size() - 2);</b>
+<b class="nc">&nbsp;                if(post2 != null) feed.add(post2);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        if(gym != null) {</b>
+<b class="nc">&nbsp;            List&lt;BusinessPost&gt; gymPosts = gym.getPosts();</b>
+<b class="nc">&nbsp;            Post gymPost1 = null;</b>
+<b class="nc">&nbsp;            Post gymPost2 = null;</b>
+<b class="nc">&nbsp;            if(gymPosts.size() &gt;= 1) {</b>
+<b class="nc">&nbsp;                gymPost1 = gymPosts.get(gymPosts.size() - 1);</b>
+<b class="nc">&nbsp;                if(gymPost1 != null) feed.add(gymPost1);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            if(gymPosts.size() &gt;= 2) {</b>
+<b class="nc">&nbsp;                gymPost2 = gymPosts.get(gymPosts.size() - 2);</b>
+<b class="nc">&nbsp;                if(gymPost2 != null) feed.add(gymPost2);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return feed;</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/posts/{username}&quot;)
+&nbsp;    public List&lt;PersonPost&gt; getPersonPosts(@PathVariable String username)
+&nbsp;    {
+<b class="fc">&nbsp;        return personRepository.findByUsername(username).getPersonPosts();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/posts/{username}&quot;)
+&nbsp;    public String postPersonPosts(@PathVariable String username, @RequestBody PersonPost personPost)
+&nbsp;    {
+&nbsp;
+<b class="fc">&nbsp;        if(personPost == null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            return &quot;failure&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Person curPerson = personRepository.findByUsername(username);</b>
+&nbsp;
+<b class="fc">&nbsp;        personPost.setPerson(curPerson);</b>
+<b class="fc">&nbsp;        personPostRepository.save(personPost);</b>
+&nbsp;
+<b class="fc">&nbsp;        curPerson.addPersonPost(personPost);</b>
+<b class="fc">&nbsp;        personRepository.save(curPerson);</b>
+&nbsp;
+<b class="fc">&nbsp;        return &quot;Success!&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/posts/person/{username}/withImage/{imageID}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; postPersonPostWithImage(@PathVariable String username, @PathVariable Long imageID, @RequestBody PersonPost personPost)
+&nbsp;    {
+&nbsp;
+<b class="nc">&nbsp;        if(personPost == null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Person post null&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if(personRepository.findByUsername(username) == null)</b>
+&nbsp;        {
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Person name not found&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;Image&gt; optionalImage = imageRepository.findById(imageID);</b>
+<b class="nc">&nbsp;        if (optionalImage.isPresent()) {</b>
+<b class="nc">&nbsp;            Image image = optionalImage.get();</b>
+<b class="nc">&nbsp;            Person tempPerson = personRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;            personPost.setPerson(tempPerson);</b>
+<b class="nc">&nbsp;            personPost.setPersonImage(image);</b>
+<b class="nc">&nbsp;            personPost.setPersonImageID(imageID);</b>
+<b class="nc">&nbsp;            personPostRepository.save(personPost);</b>
+<b class="nc">&nbsp;            tempPerson.addPersonPost(personPost);</b>
+<b class="nc">&nbsp;            personRepository.save(tempPerson);</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.OK).body(&quot;Post Successful&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/posts/person/findByID/{id}&quot;)
+&nbsp;    public PersonPost findBusinessPostByID(@PathVariable Long id)
+&nbsp;    {
+<b class="fc">&nbsp;        Optional&lt;PersonPost&gt; optionalPersonPost = personPostRepository.findById(id);</b>
+<b class="fc">&nbsp;        if(optionalPersonPost.isPresent())</b>
+&nbsp;        {
+<b class="fc">&nbsp;            PersonPost personPost = optionalPersonPost.get();</b>
+<b class="fc">&nbsp;            return personPost;</b>
+&nbsp;        }
+&nbsp;        else
+&nbsp;        {
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/posts/person/{id}/like/{person}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; incrementLike(@PathVariable Long id, @PathVariable String person)
+&nbsp;    {
+<b class="fc">&nbsp;        PersonPost pp = findBusinessPostByID(id);</b>
+<b class="fc">&nbsp;        if(pp != null)</b>
+&nbsp;        {
+&nbsp;
+<b class="fc">&nbsp;            if(pp.getLikedBy() != null &amp;&amp; pp.getLikedBy().contains(person))</b>
+&nbsp;            {
+<b class="nc">&nbsp;                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Failure, user already in set&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            int likes = pp.getLikes();</b>
+<b class="fc">&nbsp;            likes++;</b>
+<b class="fc">&nbsp;            pp.setLikes(likes);</b>
+<b class="fc">&nbsp;            if(pp.getLikedBy() == null)</b>
+&nbsp;            {
+<b class="nc">&nbsp;                Set&lt;String&gt; likedBy = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;                pp.setLikedBy(likedBy);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            pp.addLiker(person);</b>
+<b class="fc">&nbsp;            personPostRepository.save(pp);</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.OK).body(&quot;success&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Failure&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PutMapping(&quot;/posts/person/{id}/unlike/{person}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; decrementLike(@PathVariable Long id, @PathVariable String person)
+&nbsp;    {
+<b class="fc">&nbsp;        PersonPost pp = findBusinessPostByID(id);</b>
+<b class="fc">&nbsp;        if(pp != null)</b>
+&nbsp;        {
+&nbsp;
+<b class="fc">&nbsp;            if(pp.getLikedBy() != null &amp;&amp; !pp.getLikedBy().contains(person))</b>
+&nbsp;            {
+<b class="nc">&nbsp;                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Failure, user not in set&quot;);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            int likes = pp.getLikes();</b>
+<b class="fc">&nbsp;            likes--;</b>
+<b class="fc">&nbsp;            pp.setLikes(likes);</b>
+<b class="fc">&nbsp;            pp.removeLiker(person);</b>
+<b class="fc">&nbsp;            personPostRepository.save(pp);</b>
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.OK).body(&quot;success&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Failure&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/posts/person/{id}/like/{person}&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; findIfPersonLiked(@PathVariable Long id, @PathVariable String person)
+&nbsp;    {
+<b class="fc">&nbsp;        PersonPost pp = findBusinessPostByID(id);</b>
+<b class="fc">&nbsp;        if(pp == null) ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Post Null&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        if(pp.getLikedBy().contains(person))</b>
+&nbsp;        {
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.OK).body(&quot;liked&quot;);</b>
+&nbsp;        }
+&nbsp;        else
+&nbsp;        {
+<b class="fc">&nbsp;            return ResponseEntity.status(HttpStatus.OK).body(&quot;not liked&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

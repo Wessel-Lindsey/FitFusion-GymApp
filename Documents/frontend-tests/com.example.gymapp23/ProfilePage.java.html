@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfilePage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">ProfilePage.java</span></div><h1>ProfilePage.java</h1><pre class="source lang-java linenums">//package com.example.gymapp23;
+//
+//import android.content.Intent;
+//import android.graphics.Bitmap;
+//import android.graphics.BitmapFactory;
+//import android.os.Bundle;
+//
+//import com.android.volley.Request;
+//import com.android.volley.RequestQueue;
+//import com.android.volley.Response;
+//import com.android.volley.VolleyError;
+//import com.android.volley.VolleyLog;
+//import com.android.volley.toolbox.JsonArrayRequest;
+//import com.android.volley.toolbox.JsonObjectRequest;
+//import com.android.volley.toolbox.StringRequest;
+//import com.android.volley.toolbox.Volley;
+//import com.google.android.material.appbar.CollapsingToolbarLayout;
+//import com.google.android.material.floatingactionbutton.FloatingActionButton;
+//import com.google.android.material.snackbar.Snackbar;
+//
+//import androidx.appcompat.app.AppCompatActivity;
+//import androidx.appcompat.widget.Toolbar;
+//
+//import android.text.Html;
+//import android.util.Base64;
+//import android.util.Log;
+//import android.view.View;
+//import android.view.ViewGroup;
+//import android.widget.Button;
+//import android.widget.EditText;
+//import android.widget.ImageView;
+//import android.widget.LinearLayout;
+//import android.widget.ScrollView;
+//import android.widget.TextView;
+//import android.widget.Toast;
+//
+//
+//import org.json.JSONArray;
+//import org.json.JSONException;
+//import org.json.JSONObject;
+//import android.os.AsyncTask;
+//
+//import java.io.ByteArrayOutputStream;
+//import java.io.IOException;
+//import java.io.InputStream;
+//import java.net.HttpURLConnection;
+//import java.net.URL;
+//import java.io.BufferedInputStream;
+//
+//
+//
+//public class ProfilePage extends AppCompatActivity {
+//    public String GETUSERURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot;;
+//    public String GETPOSTSURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/posts/&quot;;
+//    private String TAG = MainActivity.class.getSimpleName(), feedStr;
+//    private TextView workoutPosts, userName, followsTxt, userFeed, pointsTxt, userRoutines;
+//
+//    private FloatingActionButton myGymChatFAB, followList, addPostBtn;
+//
+//    private Button followBtn, loadRoutinesBtn, postMyGym;
+//
+//    private Button showRoutines, showPosts;
+//
+//    private EditText myGymEtxt;
+//    private String userGym;
+//    private LinearLayout profileInfo;
+//    private ImageView ProfilePicture;
+//
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_profile_page);
+//
+//        Intent intent = getIntent();
+//        FloatingActionButton home = findViewById(R.id.homePage);
+//
+//        userName = findViewById(R.id.userName);
+//        myGymChatFAB = findViewById(R.id.myGymChat_userProfilePage);
+//        followBtn = findViewById(R.id.userFollowBtn);
+//        pointsTxt = findViewById(R.id.userProfilePointsTxt);
+//        showRoutines = findViewById(R.id.showRoutines);
+//        showPosts = findViewById(R.id.showPosts);
+//        postMyGym = findViewById(R.id.postMyGymBtn);
+//        myGymEtxt = findViewById(R.id.postMyGymEtx);
+//
+//        addPostBtn = findViewById(R.id.userPostBtn);
+//
+//        profileInfo = findViewById(R.id.profileInfo);
+//        ProfilePicture = findViewById(R.id.PFP);
+//
+//
+//
+//        loadProfilePic();
+//
+//        loadUserInfo();
+//        loadFeed();
+//
+//        userGym = getUserGym(); //call it initially otherwise null on first click
+//        postMyGym.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //call post request
+//                    //post request //sets the mygym attribute in the URL to the users gym
+//                    String postMyWorkout = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;) + &quot;/setHome/&quot; + myGymEtxt.getText().toString();
+//                StringRequest postMyWorkoutRequest = new StringRequest(Request.Method.POST, postMyWorkout, new Response.Listener&lt;String&gt;() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        userGym = getUserGym();
+//                        Toast.makeText(ProfilePage.this, &quot;myGym posted&quot;, Toast.LENGTH_LONG).show();
+//                    }
+//                }, new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(ProfilePage.this, &quot;error posting myGym&quot;, Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//                RequestQueue requestQueue;
+//                requestQueue = Volley.newRequestQueue(ProfilePage.this);
+//                requestQueue.add(postMyWorkoutRequest);
+//            }
+//        });
+//        home.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent2 = new Intent(ProfilePage.this, HomePage.class);
+//                intent2.putExtra(&quot;username&quot;, intent.getStringExtra(LoginPage.USERNAME));
+//                startActivity(intent2);
+//                finish();
+//            }
+//        });
+//        followBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent2 = new Intent(ProfilePage.this, FollowingList.class);
+//                intent2.putExtra(&quot;username&quot;, intent.getStringExtra(LoginPage.USERNAME));
+//                startActivity(intent2);
+//                finish();
+//            }
+//        });
+//        showRoutines.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                profileInfo.removeAllViews();
+//                loadAllRoutines();
+//            }
+//        });
+//        showPosts.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                profileInfo.removeAllViews();
+//                loadFeed();
+//            }
+//        });
+//        myGymChatFAB.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String usersGym = getUserGym();
+//   //             Toast.makeText(ProfilePage.this, usersGym, Toast.LENGTH_LONG).show();
+//                Intent gcIntent = new Intent(ProfilePage.this, MyGymChat.class);
+//                gcIntent.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));
+//                gcIntent.putExtra(&quot;myGym&quot;, usersGym);
+//                startActivity(gcIntent);
+//                finish();
+//            }
+//        });
+//
+//
+//        addPostBtn.setOnClickListener(new View.OnClickListener() {
+//                                          @Override
+//                                          public void onClick(View v) {
+//                                              //open up a post screen
+//                                              Intent i = new Intent(ProfilePage.this, UserPosts.class);
+//                                              startActivity(i);
+//                                              finish();
+//                                          }
+//                                      });
+//
+//        ProfilePicture.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent i = new Intent(ProfilePage.this, ProfilePictureSelect.class);
+//                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));
+//                startActivity(i);
+//                finish();
+//            }
+//        });
+//    }
+//
+//    private void loadUserInfo() {
+//        String feedStr;
+//        String URL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;);
+//
+//        Toast.makeText(ProfilePage.this, URL, Toast.LENGTH_LONG);
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+//                (Request.Method.GET, URL, null, new Response.Listener&lt;JSONObject&gt;() {
+//
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        //populate profile page
+//                        try {
+//                            userName.setText(response.getString(&quot;username&quot;));
+//                            pointsTxt.setText(&quot;Points: &quot; +response.getInt(&quot;points&quot;));
+//                        } catch (JSONException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//
+//
+//                    }
+//                }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(ProfilePage.this, &quot;Error getting user details&quot;, Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//        RequestQueue rq = Volley.newRequestQueue(ProfilePage.this);
+//        rq.add(jsonObjectRequest);
+//    }
+//    private void loadFeed() {
+//
+//        JsonArrayRequest postsGETRequest = new JsonArrayRequest(Request.Method.GET, GETPOSTSURL + getIntent().getStringExtra(&quot;username&quot;), null, new Response.Listener&lt;JSONArray&gt;() {
+//
+//            @Override
+//            public void onResponse(JSONArray response) {
+//                try {
+//                    if (response.length() == 0) {
+//                        addTextCard(&quot;No posts here yet&quot;);
+//                    }
+//                    else {
+//                        feedStr = &quot;&quot;;
+//                        for (int i = response.length()-1; i &gt;= 0; i--) {
+//                            JSONObject object = response.getJSONObject(i);
+//                            String title = object.getString(&quot;title&quot;);
+//                            String message = object.getString(&quot;message&quot;);
+//                            int likes = object.getInt(&quot;likes&quot;);
+//                            feedStr = &quot;&lt;h2&gt;&lt;b&gt; &lt;span style=color:black&gt;&quot;+ title + &quot;:&lt;/span&gt; &lt;/b&gt;&lt;/h2&gt;&quot;
+//                                    + &quot;&lt;p&gt;&quot; + message + &quot;&lt;p&gt;&lt;span style=color:#505050&gt; &quot; +
+//                                    &quot;Likes: &lt;/span&gt;&lt;b&gt;&lt;span style=color:#F06060&gt;&quot; + likes + &quot;&lt;/span&gt;&quot;;
+//                            addCard(feedStr);
+//                        }
+//                    }
+//                }
+//                catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                addTextCard(&quot;Error loading feed&quot;);
+//                error.printStackTrace();
+//
+//            }
+//        });
+//
+//
+//        RequestQueue requestQueue;
+//        requestQueue = Volley.newRequestQueue(ProfilePage.this);
+//        requestQueue.add(postsGETRequest);
+//    }
+//    private void loadAllRoutines() {
+//        String getAllRoutinesURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/user/&quot; + getIntent().getStringExtra(&quot;username&quot;) + &quot;/routines&quot;;
+//
+//        //get request
+//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest
+//                (Request.Method.GET, getAllRoutinesURL, null, new Response.Listener&lt;JSONArray&gt;() {
+//
+//                    @Override
+//                    public void onResponse(JSONArray response) {
+//                        //find highest id
+//                        JSONObject cur;
+//                        int id;
+//                        String msg;
+//
+////                        msg = &quot;&lt;h2&gt;&lt;b&gt;&lt;span style=color:black&gt;Latest Routine: &lt;/b&gt;&lt;/h2&gt;&quot;;
+//
+//
+//                        try {
+//                            //print out all routines
+//                            for (int j = 0; j &lt; response.length(); j++) {
+//                                cur = response.getJSONObject(j);
+//                                JSONArray workouts = cur.getJSONArray(&quot;workouts&quot;);
+//                                msg = &quot;&lt;h2&gt;&lt;span style=color:#64000A&gt;&quot; + cur.getString(&quot;name&quot;) + &quot;&lt;/span&gt;&lt;/h2&gt;&quot;;
+//
+//                                //iterate through all the workouts
+//                                for (int i = 0; i &lt; workouts.length(); i++) {
+//                                    JSONObject exercise = workouts.getJSONObject(i);
+//                                    msg+= &quot;&lt;p&gt;&lt;b&gt;&lt;span style=color:black&gt;Exercise &quot; + (i+1) + &quot;: &lt;/b&gt;&lt;/style&gt;&lt;span style=color:#64000A&gt;&quot; + exercise.getString(&quot;name&quot;) +
+//                                            &quot;&lt;/span&gt;\t&lt;b&gt;&lt;span style=color:black&gt;\tPR: &lt;/style&gt;&lt;/b&gt;&lt;span style=color:#64000A&gt;&quot; + exercise.getString(&quot;record&quot;) + &quot; &lt;/span&gt;&lt;b&gt;&lt;span style=color:black&gt; reps: &lt;/style&gt;&lt;/b&gt;&lt;span style=color:#64000A&gt;&quot; + exercise.getString(&quot;reps&quot;) + &quot;&lt;/span&gt;&lt;/p&gt;&quot;;
+//                                }
+//
+//                                msg += &quot;&lt;p&gt;&lt;span style=color:black&gt;-------------------------------------------------&lt;/span&gt;&lt;/p&gt;&quot;;
+//                                addTextCard(msg);
+//                            }
+//                        } catch (JSONException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(ProfilePage.this, &quot;Error getting User details&quot;, Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//
+//
+//        RequestQueue requestQueue;
+//        requestQueue = Volley.newRequestQueue(ProfilePage.this);
+//        requestQueue.add(jsonArrayRequest);
+//
+//    }
+//    private String getUserGym() {
+//        String URL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;);
+//
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+//                (Request.Method.GET, URL, null, new Response.Listener&lt;JSONObject&gt;() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            //Toast.makeText(ProfilePage.this, response.toString(), Toast.LENGTH_LONG).show();
+//                            userGym = response.getJSONObject(&quot;myGym&quot;).getString(&quot;businessName&quot;);
+//                        } catch (JSONException e) {
+//
+//                            userGym = &quot;stateGym&quot;;
+//
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(ProfilePage.this, &quot;Error getting user details&quot;, Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//        RequestQueue rq = Volley.newRequestQueue(ProfilePage.this);
+//        rq.add(jsonObjectRequest);
+//
+//        return userGym;
+//    }
+//    private void addTextCard(String text){
+//        View view = getLayoutInflater().inflate(R.layout.simple_text_box, null);
+//        TextView nameView = view.findViewById(R.id.textView);
+//
+//        nameView.setText(Html.fromHtml(text));
+//
+//        profileInfo.addView(view);
+//    }
+//    private void addCard(String text){
+//        View view = getLayoutInflater().inflate(R.layout.simple_box, null);
+//        TextView nameView = view.findViewById(R.id.textView);
+//        Button btn = view.findViewById(R.id.followBTN);
+//
+//        nameView.setText(Html.fromHtml(text));
+//        btn.setText(&quot;Like&quot;); //ADD LIKE FEATURE
+//
+//        profileInfo.addView(view);
+//    }
+//    private void loadProfilePic() {
+//        String PROFILEPICURL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;) + &quot;/profilePicture&quot;;
+//
+//        StringRequest request = new StringRequest
+//                (Request.Method.GET, PROFILEPICURL, new Response.Listener&lt;String&gt;() {
+//                    @Override
+//                    public void onResponse(String response) {
+//                        if (!response.isEmpty()) {
+//
+//                            String imageUrl = PROFILEPICURL;
+//
+//                            // Execute an AsyncTask to load the image from the URL
+//                            new LoadImageTask().execute(imageUrl);
+//                        } else {
+//                            // generate custom profile pic from URL
+//                            String imageUrl = &quot;https://robohash.org/&quot; + getIntent().getStringExtra(&quot;username&quot;);
+//
+//                            // Execute an AsyncTask to load the image from the URL
+//                            new LoadImageTask().execute(imageUrl);
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.d(TAG, error.toString());
+//                        Toast.makeText(ProfilePage.this, error.toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                });
+//        RequestQueue rq = Volley.newRequestQueue(ProfilePage.this);
+//        rq.add(request);
+//    }
+//    private class LoadImageTask extends AsyncTask&lt;String, Void, byte[]&gt; {
+//
+//        @Override
+//        protected byte[] doInBackground(String... params) {
+//            String imageUrl = params[0];
+//
+//            try {
+//                URL url = new URL(imageUrl);
+//                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                connection.setDoInput(true);
+//                connection.connect();
+//
+//                InputStream input = connection.getInputStream();
+//                ByteArrayOutputStream output = new ByteArrayOutputStream();
+//
+//                byte[] buffer = new byte[4096];
+//                int bytesRead;
+//                while ((bytesRead = input.read(buffer)) != -1) {
+//                    output.write(buffer, 0, bytesRead);
+//                }
+//
+//                input.close();
+//                return output.toByteArray();
+//            } catch (Exception e) {
+//                Log.e(&quot;ImageLoading&quot;, &quot;Error loading image&quot;, e);
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(byte[] imageBytes) {
+//            if (imageBytes != null &amp;&amp; imageBytes.length &gt; 0) {
+//                // Convert byte array to Bitmap
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+//
+//                // Set Bitmap to ImageView
+//                ProfilePicture.setImageBitmap(bitmap);
+//            } else {
+//                Log.e(&quot;ImageLoading&quot;, &quot;Empty or null byte array&quot;);
+//            }
+//        }
+//    }
+//}
+package com.example.gymapp23;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityHomePageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.text.Html;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import android.os.AsyncTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.BufferedInputStream;
+
+
+
+<span class="fc" id="L487">public class ProfilePage extends AppCompatActivity {</span>
+<span class="fc" id="L488">    public String GETUSERURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot;;</span>
+<span class="fc" id="L489">    public String GETPOSTSURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/posts&quot;;</span>
+<span class="fc" id="L490">    private String TAG = MainActivity.class.getSimpleName(), feedStr;</span>
+    private TextView userName, pointsTxt;
+    private FloatingActionButton myGymChatFAB, addPostBtn;
+    private Button followBtn, showRoutines, postMyGym, showPosts;
+    private EditText myGymEtxt;
+    private String userGym;
+    private LinearLayout profileInfo;
+    private ImageView ProfilePicture;
+    private ActivityProfilePageBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L502">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L503">        binding = ActivityProfilePageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L504">        setContentView(binding.getRoot());</span>
+
+<span class="fc" id="L506">        Intent intent = getIntent();</span>
+<span class="fc" id="L507">        FloatingActionButton home = findViewById(R.id.homePage);</span>
+
+<span class="fc" id="L509">        userName = findViewById(R.id.userName);</span>
+<span class="fc" id="L510">        myGymChatFAB = findViewById(R.id.myGymChat_userProfilePage);</span>
+<span class="fc" id="L511">        followBtn = findViewById(R.id.userFollowBtn);</span>
+<span class="fc" id="L512">        pointsTxt = findViewById(R.id.userProfilePointsTxt);</span>
+<span class="fc" id="L513">        showRoutines = findViewById(R.id.showRoutines);</span>
+<span class="fc" id="L514">        showPosts = findViewById(R.id.showPosts);</span>
+<span class="fc" id="L515">        postMyGym = findViewById(R.id.postMyGymBtn);</span>
+<span class="fc" id="L516">        myGymEtxt = findViewById(R.id.postMyGymEtx);</span>
+<span class="fc" id="L517">        profileInfo = findViewById(R.id.profileInfo);</span>
+<span class="fc" id="L518">        ProfilePicture = findViewById(R.id.PFP);</span>
+<span class="fc" id="L519">        addPostBtn = findViewById(R.id.userPostBtn);</span>
+
+
+
+<span class="fc" id="L523">        loadProfilePic();</span>
+
+<span class="fc" id="L525">        loadUserInfo();</span>
+<span class="fc" id="L526">        loadFeed();</span>
+
+<span class="fc" id="L528">        userGym = getUserGym(); //call it initially otherwise null on first click</span>
+<span class="fc" id="L529">        postMyGym.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //call post request
+                //post request //sets the mygym attribute in the URL to the users gym
+<span class="fc" id="L534">                String postMyWorkout = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;) + &quot;/setHome/&quot; + myGymEtxt.getText().toString();</span>
+<span class="fc" id="L535">                StringRequest postMyWorkoutRequest = new StringRequest(Request.Method.POST, postMyWorkout, new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+<span class="fc" id="L538">                        userGym = getUserGym();</span>
+<span class="fc" id="L539">                        Toast.makeText(ProfilePage.this, &quot;myGym posted&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L540">                    }</span>
+<span class="fc" id="L541">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L544">                        Toast.makeText(ProfilePage.this, &quot;error posting myGym&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L545">                    }</span>
+                });
+                RequestQueue requestQueue;
+<span class="fc" id="L548">                requestQueue = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L549">                requestQueue.add(postMyWorkoutRequest);</span>
+<span class="fc" id="L550">            }</span>
+        });
+<span class="fc" id="L552">        home.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L555">                Intent intent2 = new Intent(ProfilePage.this, HomePage.class);</span>
+<span class="fc" id="L556">                intent2.putExtra(&quot;username&quot;, intent.getStringExtra(LoginPage.USERNAME));</span>
+<span class="fc" id="L557">                startActivity(intent2);</span>
+<span class="fc" id="L558">                finish();</span>
+<span class="fc" id="L559">            }</span>
+        });
+<span class="fc" id="L561">        followBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L564">                Intent intent2 = new Intent(ProfilePage.this, FollowingList.class);</span>
+<span class="fc" id="L565">                intent2.putExtra(&quot;username&quot;, intent.getStringExtra(LoginPage.USERNAME));</span>
+<span class="fc" id="L566">                startActivity(intent2);</span>
+<span class="fc" id="L567">                finish();</span>
+<span class="fc" id="L568">            }</span>
+        });
+<span class="fc" id="L570">        showRoutines.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L573">                profileInfo.removeAllViews();</span>
+<span class="fc" id="L574">                loadAllRoutines();</span>
+<span class="fc" id="L575">            }</span>
+        });
+<span class="fc" id="L577">        showPosts.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L580">                profileInfo.removeAllViews();</span>
+<span class="fc" id="L581">                loadFeed();</span>
+<span class="fc" id="L582">            }</span>
+        });
+<span class="fc" id="L584">        myGymChatFAB.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L587">                String usersGym = getUserGym();</span>
+                //             Toast.makeText(ProfilePage.this, usersGym, Toast.LENGTH_LONG).show();
+<span class="fc" id="L589">                Intent gcIntent = new Intent(ProfilePage.this, MyGymChat.class);</span>
+<span class="fc" id="L590">                gcIntent.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L591">                gcIntent.putExtra(&quot;myGym&quot;, usersGym);</span>
+<span class="fc" id="L592">                startActivity(gcIntent);</span>
+<span class="fc" id="L593">                finish();</span>
+<span class="fc" id="L594">            }</span>
+        });
+<span class="fc" id="L596">        ProfilePicture.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L599">                Intent i = new Intent(ProfilePage.this, ProfilePictureSelect.class);</span>
+<span class="fc" id="L600">                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L601">                startActivity(i);</span>
+<span class="fc" id="L602">                finish();</span>
+<span class="fc" id="L603">            }</span>
+        });
+<span class="fc" id="L605">        addPostBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //open up a post screen
+<span class="fc" id="L609">                Intent i = new Intent(ProfilePage.this, UserPosts.class);</span>
+<span class="fc" id="L610">                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L611">                startActivity(i);</span>
+<span class="fc" id="L612">                finish();</span>
+<span class="fc" id="L613">            }</span>
+        });
+<span class="fc" id="L615">    }</span>
+
+    private void loadUserInfo() {
+        String feedStr;
+<span class="fc" id="L619">        String URL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;);</span>
+
+<span class="fc" id="L621">        Toast.makeText(ProfilePage.this, URL, Toast.LENGTH_LONG);</span>
+<span class="fc" id="L622">        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest</span>
+<span class="fc" id="L623">                (Request.Method.GET, URL, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //populate profile page
+                        try {
+<span class="fc" id="L629">                            userName.setText(response.getString(&quot;username&quot;));</span>
+<span class="fc" id="L630">                            pointsTxt.setText(&quot;Points: &quot; +response.getInt(&quot;points&quot;));</span>
+<span class="nc" id="L631">                        } catch (JSONException e) {</span>
+<span class="nc" id="L632">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L633">                        }</span>
+
+
+<span class="fc" id="L636">                    }</span>
+<span class="fc" id="L637">                }, new Response.ErrorListener() {</span>
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L641">                        Toast.makeText(ProfilePage.this, &quot;Error getting user details&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L642">                    }</span>
+                });
+<span class="fc" id="L644">        RequestQueue rq = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L645">        rq.add(jsonObjectRequest);</span>
+<span class="fc" id="L646">    }</span>
+    private void loadFeed() {
+<span class="fc" id="L648">        JsonArrayRequest postsGETRequest = new JsonArrayRequest(Request.Method.GET, GETPOSTSURL+ &quot;/&quot; + getIntent().getStringExtra(&quot;username&quot;), null, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+<span class="pc bpc" id="L652" title="1 of 2 branches missed.">                    if (response.length() == 0) {</span>
+<span class="nc" id="L653">                        addTextCard(&quot;No posts here yet&quot;);</span>
+                    }
+                    else {
+<span class="fc" id="L656">                        feedStr = &quot;&quot;;</span>
+<span class="fc bfc" id="L657" title="All 2 branches covered.">                        for (int i = response.length()-1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L658">                            JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L659">                            String title = object.getString(&quot;title&quot;);</span>
+<span class="fc" id="L660">                            String message = object.getString(&quot;message&quot;);</span>
+<span class="fc" id="L661">                            int likes = object.getInt(&quot;likes&quot;);</span>
+<span class="fc" id="L662">                            feedStr = &quot;&lt;h2&gt;&lt;b&gt; &lt;span style=color:black&gt;&quot;+ title + &quot;:&lt;/span&gt; &lt;/b&gt;&lt;/h2&gt;&quot;</span>
+                                    + &quot;&lt;p&gt;&quot; + message + &quot;&lt;p&gt;&lt;span style=color:#505050&gt; &quot; +
+                                    &quot;Likes: &lt;/span&gt;&lt;b&gt;&lt;span style=color:#F06060&gt;&quot; + likes + &quot;&lt;/span&gt;&quot;;
+
+                            //addCard(feedStr);
+<span class="fc" id="L667">                            addPostCard(getIntent().getStringExtra(&quot;username&quot;), response.getJSONObject(i));</span>
+                        }
+                    }
+                }
+<span class="nc" id="L671">                catch (JSONException e) {</span>
+<span class="nc" id="L672">                    e.printStackTrace();</span>
+<span class="fc" id="L673">                }</span>
+<span class="fc" id="L674">            }</span>
+<span class="fc" id="L675">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L678">                addTextCard(&quot;Error loading feed&quot;);</span>
+<span class="nc" id="L679">                error.printStackTrace();</span>
+
+<span class="nc" id="L681">            }</span>
+        });
+
+
+        RequestQueue requestQueue;
+<span class="fc" id="L686">        requestQueue = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L687">        requestQueue.add(postsGETRequest);</span>
+<span class="fc" id="L688">    }</span>
+    private void loadAllRoutines() {
+<span class="fc" id="L690">        String getAllRoutinesURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/user/&quot; + getIntent().getStringExtra(&quot;username&quot;) + &quot;/routines&quot;;</span>
+
+        //get request
+<span class="fc" id="L693">        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest</span>
+<span class="fc" id="L694">                (Request.Method.GET, getAllRoutinesURL, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //find highest id
+                        JSONObject cur;
+                        int id;
+                        String msg;
+
+//                        msg = &quot;&lt;h2&gt;&lt;b&gt;&lt;span style=color:black&gt;Latest Routine: &lt;/b&gt;&lt;/h2&gt;&quot;;
+
+
+                        try {
+                            //print out all routines
+<span class="fc bfc" id="L708" title="All 2 branches covered.">                            for (int j = 0; j &lt; response.length(); j++) {</span>
+<span class="fc" id="L709">                                cur = response.getJSONObject(j);</span>
+<span class="fc" id="L710">                                JSONArray workouts = cur.getJSONArray(&quot;workouts&quot;);</span>
+<span class="fc" id="L711">                                msg = &quot;&lt;h2&gt;&lt;span style=color:#64000A&gt;&quot; + cur.getString(&quot;name&quot;) + &quot;&lt;/span&gt;&lt;/h2&gt;&quot;;</span>
+
+                                //iterate through all the workouts
+<span class="fc bfc" id="L714" title="All 2 branches covered.">                                for (int i = 0; i &lt; workouts.length(); i++) {</span>
+<span class="fc" id="L715">                                    JSONObject exercise = workouts.getJSONObject(i);</span>
+<span class="fc" id="L716">                                    msg+= &quot;&lt;p&gt;&lt;b&gt;&lt;span style=color:black&gt;Exercise &quot; + (i+1) + &quot;: &lt;/b&gt;&lt;/style&gt;&lt;span style=color:#64000A&gt;&quot; + exercise.getString(&quot;name&quot;);</span>
+//                                            + &quot;&lt;/span&gt;\t&lt;b&gt;&lt;span style=color:black&gt;\tPR: &lt;/style&gt;&lt;/b&gt;&lt;span style=color:#64000A&gt;&quot; + exercise.getString(&quot;record&quot;) + &quot; &lt;/span&gt;&lt;b&gt;&lt;span style=color:black&gt; reps: &lt;/style&gt;&lt;/b&gt;&lt;span style=color:#64000A&gt;&quot; + exercise.getString(&quot;reps&quot;) + &quot;&lt;/span&gt;&lt;/p&gt;&quot;;
+                                }
+
+<span class="fc" id="L720">                                msg += &quot;&lt;p&gt;&lt;span style=color:black&gt;-------------------------------------------------&lt;/span&gt;&lt;/p&gt;&quot;;</span>
+<span class="fc" id="L721">                                addTextCard(msg);</span>
+                            }
+<span class="nc" id="L723">                        } catch (JSONException e) {</span>
+<span class="nc" id="L724">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L725">                        }</span>
+<span class="fc" id="L726">                    }</span>
+<span class="fc" id="L727">                }, new Response.ErrorListener() {</span>
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L731">                        Toast.makeText(ProfilePage.this, &quot;Error getting User details&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L732">                    }</span>
+                });
+
+
+        RequestQueue requestQueue;
+<span class="fc" id="L737">        requestQueue = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L738">        requestQueue.add(jsonArrayRequest);</span>
+
+<span class="fc" id="L740">    }</span>
+    private String getUserGym() {
+<span class="fc" id="L742">        String URL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;);</span>
+
+<span class="fc" id="L744">        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest</span>
+<span class="fc" id="L745">                (Request.Method.GET, URL, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            //Toast.makeText(ProfilePage.this, response.toString(), Toast.LENGTH_LONG).show();
+<span class="fc" id="L750">                            userGym = response.getJSONObject(&quot;myGym&quot;).getString(&quot;businessName&quot;);</span>
+<span class="fc" id="L751">                        } catch (JSONException e) {</span>
+<span class="fc" id="L752">                            userGym = &quot;stateGym&quot;;</span>
+<span class="fc" id="L753">                        }</span>
+<span class="fc" id="L754">                    }</span>
+<span class="fc" id="L755">                }, new Response.ErrorListener() {</span>
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L759">                        Toast.makeText(ProfilePage.this, &quot;Error getting user details&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L760">                    }</span>
+                });
+<span class="fc" id="L762">        RequestQueue rq = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L763">        rq.add(jsonObjectRequest);</span>
+
+<span class="fc" id="L765">        return userGym;</span>
+    }
+    private void addTextCard(String text){
+<span class="fc" id="L768">        View view = getLayoutInflater().inflate(R.layout.simple_text_box, null);</span>
+<span class="fc" id="L769">        TextView nameView = view.findViewById(R.id.textView);</span>
+
+<span class="fc" id="L771">        nameView.setText(Html.fromHtml(text));</span>
+
+<span class="fc" id="L773">        profileInfo.addView(view);</span>
+<span class="fc" id="L774">    }</span>
+//    private void addCard(String text){
+//        View view = getLayoutInflater().inflate(R.layout.simple_box, null);
+//        TextView nameView = view.findViewById(R.id.textView);
+//        Button btn = view.findViewById(R.id.followBTN);
+//
+//        nameView.setText(Html.fromHtml(text));
+//        btn.setText(&quot;Like&quot;); //ADD LIKE FEATURE
+//
+//
+//        profileInfo.addView(view);
+//    }
+    public void addPostCard(String name, JSONObject post) {
+<span class="fc" id="L787">        TextView debug = findViewById(R.id.feedTxt);</span>
+        //debug.setText(&quot;in add post&quot;);
+
+<span class="fc" id="L790">        View view = getLayoutInflater().inflate(R.layout.post_container, null);</span>
+<span class="fc" id="L791">        TextView usernameTxt = view.findViewById(R.id.usernameTextView);</span>
+<span class="fc" id="L792">        TextView titleTxt = view.findViewById(R.id.titleTextView);</span>
+<span class="fc" id="L793">        TextView msgTxt = view.findViewById(R.id.messageTextView);</span>
+<span class="fc" id="L794">        TextView likesTxt = view.findViewById(R.id.likesTextView);</span>
+<span class="fc" id="L795">        Button likeBtn = view.findViewById(R.id.likeBTN);</span>
+        //profilePicOnPost = view.findViewById(R.id.postProfilePic);
+
+        int postID;
+
+        //debug.setText(debug.getText().toString() + &quot;\n&quot; + post.toString());
+
+//        Toast.makeText(HomePage.this, &quot;adding card&quot; + post.toString(), Toast.LENGTH_SHORT).show();
+
+<span class="pc bpc" id="L804" title="1 of 2 branches missed.">        if (name.equals(&quot;No Feed - Find friends to see their posts&quot;)) {</span>
+<span class="nc" id="L805">            View Errorview = getLayoutInflater().inflate(R.layout.simple_text_box, null);</span>
+<span class="nc" id="L806">            TextView text = findViewById(R.id.textView);</span>
+<span class="nc" id="L807">            text.setText(&quot;No Feed - Find friends to see their post&quot;);</span>
+<span class="nc" id="L808">            profileInfo.addView(Errorview);</span>
+<span class="nc" id="L809">        } else {</span>
+            try {
+<span class="fc" id="L811">                usernameTxt.setText(&quot;&quot;); //leave blank until owner of post is passed</span>
+<span class="fc" id="L812">                titleTxt.setText(post.getString(&quot;message&quot;));</span>
+<span class="fc" id="L813">                msgTxt.setText(post.getString(&quot;title&quot;));</span>
+<span class="fc" id="L814">                postID = post.getInt(&quot;id&quot;);</span>
+<span class="fc" id="L815">                int numLikes = post.getInt(&quot;likes&quot;);</span>
+
+<span class="fc" id="L817">                Log.d(&quot;NUM LIKES&quot;, &quot;Num Likes: &quot; + numLikes);</span>
+<span class="pc bpc" id="L818" title="1 of 2 branches missed.">                if (numLikes &lt; 0) {</span>
+<span class="nc" id="L819">                    numLikes = 0;</span>
+                }
+<span class="fc" id="L821">                likesTxt.setText(String.valueOf(numLikes));</span>
+
+                //display image
+                //displayProfilePicToCard(view, postID);
+
+<span class="fc" id="L826">                likeBtn.setOnClickListener(new View.OnClickListener() {</span>
+                    boolean hasLiked;
+
+                    @Override
+                    public void onClick(View v) {
+                        //check if user has already liked it
+                        try {
+                            ///posts/person/{id}/like/{person}
+<span class="fc" id="L834">                            String checkLikedURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/posts/person/&quot; + postID + &quot;/like/&quot; + getIntent().getStringExtra(&quot;username&quot;);</span>
+//                   Toast.makeText(GroupChatBanPage.this, name, Toast.LENGTH_LONG).show();
+<span class="fc" id="L836">                            StringRequest stringRequest = new StringRequest(Request.Method.GET, checkLikedURL, new Response.Listener&lt;String&gt;() {</span>
+
+                                @Override
+                                public void onResponse(String response) {
+<span class="fc" id="L840">                                    Log.d(&quot;LIKE BUTTON&quot;, &quot;HasLiked response:&quot; + response.toString());</span>
+
+<span class="fc bfc" id="L842" title="All 2 branches covered.">                                    if (response.equals(&quot;liked&quot;)) {</span>
+<span class="fc" id="L843">                                        hasLiked = true;</span>
+<span class="fc" id="L844">                                        String unlikeURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/posts/person/&quot; + postID + &quot;/unlike/&quot;+ getIntent().getStringExtra(&quot;username&quot;);</span>
+<span class="fc" id="L845">                                        StringRequest unlikeRequest = new StringRequest(Request.Method.PUT, unlikeURL, new Response.Listener&lt;String&gt;() {</span>
+                                            @Override
+                                            public void onResponse(String response) {
+<span class="fc" id="L848">                                                Toast.makeText(ProfilePage.this, &quot;unliked&quot;, Toast.LENGTH_SHORT).show();</span>
+                                                //update like counter in real time to prevent reloading feed.
+
+<span class="fc" id="L851">                                                int decrementLikes = Integer.parseInt(likesTxt.getText().toString()) - 1;</span>
+<span class="fc" id="L852">                                                String intToString = &quot;&quot; + decrementLikes;</span>
+<span class="fc" id="L853">                                                likesTxt.setText(intToString);</span>
+<span class="fc" id="L854">                                            }</span>
+<span class="fc" id="L855">                                        }, new Response.ErrorListener() {</span>
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L858">                                                Toast.makeText(ProfilePage.this, &quot;Error unliking&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L859">                                            }</span>
+                                        });
+                                        RequestQueue rq;
+<span class="fc" id="L862">                                        rq = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L863">                                        rq.add(unlikeRequest);</span>
+<span class="fc" id="L864">                                    }</span>
+                                    else {
+<span class="fc" id="L866">                                        hasLiked = false;</span>
+<span class="fc" id="L867">                                        String likeURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/posts/person/&quot; + postID + &quot;/like/&quot;+ getIntent().getStringExtra(&quot;username&quot;);</span>
+<span class="fc" id="L868">                                        StringRequest likeRequest = new StringRequest(Request.Method.PUT, likeURL, new Response.Listener&lt;String&gt;() {</span>
+                                            @Override
+                                            public void onResponse(String response) {
+<span class="fc" id="L871">                                                Toast.makeText(ProfilePage.this, &quot;Liked&quot;, Toast.LENGTH_SHORT).show();</span>
+                                                //update like counter in real time to prevent reloading feed.
+<span class="fc" id="L873">                                                int incrementLikes = Integer.parseInt(likesTxt.getText().toString()) + 1;</span>
+<span class="fc" id="L874">                                                String intToString = &quot;&quot; + incrementLikes;</span>
+<span class="fc" id="L875">                                                likesTxt.setText(intToString);</span>
+<span class="fc" id="L876">                                            }</span>
+<span class="fc" id="L877">                                        }, new Response.ErrorListener() {</span>
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L880">                                                Toast.makeText(ProfilePage.this, &quot;Error Liked&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="nc" id="L881">                                            }</span>
+                                        });
+                                        RequestQueue rq;
+<span class="fc" id="L884">                                        rq = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L885">                                        rq.add(likeRequest);</span>
+                                    }
+
+<span class="fc" id="L888">                                }</span>
+<span class="fc" id="L889">                            }, new Response.ErrorListener() {</span>
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L892">                                    Log.d(&quot;hasliked error&quot;, error.toString());</span>
+<span class="nc" id="L893">                                }</span>
+                            }
+                            );
+
+
+<span class="fc" id="L898">                            Log.d(&quot;LIKE BUTTON&quot;, &quot;Hasliked: &quot; + hasLiked);</span>
+<span class="fc" id="L899">                            Log.d(&quot;LIKE BUTTON&quot;, &quot;Post id: &quot; + postID);</span>
+
+
+                            RequestQueue requestQueue;
+<span class="fc" id="L903">                            requestQueue = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L904">                            requestQueue.add(stringRequest);</span>
+<span class="nc" id="L905">                        } catch (Exception e) {</span>
+<span class="nc" id="L906">                            e.printStackTrace();</span>
+<span class="fc" id="L907">                        }</span>
+
+<span class="fc" id="L909">                    }</span>
+                });
+<span class="fc" id="L911">                profileInfo.addView(view);</span>
+
+<span class="nc" id="L913">            } catch (JSONException e) {</span>
+<span class="nc" id="L914">                VolleyLog.d(TAG, &quot;addPostCard Error&quot;);</span>
+<span class="fc" id="L915">            }</span>
+        }
+
+<span class="fc" id="L918">    }</span>
+    private void loadProfilePic() {
+<span class="fc" id="L920">        String PROFILEPICURL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;) + &quot;/profilePicture&quot;;</span>
+
+<span class="fc" id="L922">        StringRequest request = new StringRequest</span>
+<span class="fc" id="L923">                (Request.Method.GET, PROFILEPICURL, new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+<span class="pc bpc" id="L926" title="1 of 2 branches missed.">                        if (!response.isEmpty()) {</span>
+
+<span class="fc" id="L928">                            String imageUrl = PROFILEPICURL;</span>
+
+                            // Execute an AsyncTask to load the image from the URL
+<span class="fc" id="L931">                            new LoadImageTask().execute(imageUrl);</span>
+<span class="fc" id="L932">                        } else {</span>
+                            // generate custom profile pic from URL
+<span class="nc" id="L934">                            String imageUrl = &quot;https://robohash.org/&quot; + getIntent().getStringExtra(&quot;username&quot;);</span>
+
+                            // Execute an AsyncTask to load the image from the URL
+<span class="nc" id="L937">                            new LoadImageTask().execute(imageUrl);</span>
+                        }
+<span class="fc" id="L939">                    }</span>
+<span class="fc" id="L940">                }, new Response.ErrorListener() {</span>
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L944">                        Log.d(TAG, error.toString());</span>
+<span class="fc" id="L945">                        Toast.makeText(ProfilePage.this, error.toString(), Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L946">                    }</span>
+                });
+<span class="fc" id="L948">        RequestQueue rq = Volley.newRequestQueue(ProfilePage.this);</span>
+<span class="fc" id="L949">        rq.add(request);</span>
+<span class="fc" id="L950">    }</span>
+<span class="fc" id="L951">    private class LoadImageTask extends AsyncTask&lt;String, Void, byte[]&gt; {</span>
+
+        @Override
+        protected byte[] doInBackground(String... params) {
+<span class="fc" id="L955">            String imageUrl = params[0];</span>
+
+            try {
+<span class="fc" id="L958">                URL url = new URL(imageUrl);</span>
+<span class="fc" id="L959">                HttpURLConnection connection = (HttpURLConnection) url.openConnection();</span>
+<span class="fc" id="L960">                connection.setDoInput(true);</span>
+<span class="fc" id="L961">                connection.connect();</span>
+
+<span class="fc" id="L963">                InputStream input = connection.getInputStream();</span>
+<span class="fc" id="L964">                ByteArrayOutputStream output = new ByteArrayOutputStream();</span>
+
+<span class="fc" id="L966">                byte[] buffer = new byte[4096];</span>
+                int bytesRead;
+<span class="fc bfc" id="L968" title="All 2 branches covered.">                while ((bytesRead = input.read(buffer)) != -1) {</span>
+<span class="fc" id="L969">                    output.write(buffer, 0, bytesRead);</span>
+                }
+
+<span class="fc" id="L972">                input.close();</span>
+<span class="fc" id="L973">                return output.toByteArray();</span>
+<span class="nc" id="L974">            } catch (Exception e) {</span>
+<span class="nc" id="L975">                Log.e(&quot;ImageLoading&quot;, &quot;Error loading image&quot;, e);</span>
+<span class="nc" id="L976">                return null;</span>
+            }
+        }
+
+        @Override
+        protected void onPostExecute(byte[] imageBytes) {
+<span class="pc bpc" id="L982" title="2 of 4 branches missed.">            if (imageBytes != null &amp;&amp; imageBytes.length &gt; 0) {</span>
+                // Convert byte array to Bitmap
+<span class="fc" id="L984">                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);</span>
+
+                // Set Bitmap to ImageView
+<span class="fc" id="L987">                ProfilePicture.setImageBitmap(bitmap);</span>
+<span class="fc" id="L988">            } else {</span>
+<span class="nc" id="L989">                Log.e(&quot;ImageLoading&quot;, &quot;Empty or null byte array&quot;);</span>
+            }
+<span class="fc" id="L991">        }</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

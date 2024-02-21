@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserSignup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">UserSignup.java</span></div><h1>UserSignup.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L23">public class UserSignup extends AppCompatActivity {</span>
+
+    private boolean flag;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L28">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L29">        setContentView(R.layout.activity_user_signup);</span>
+
+<span class="fc" id="L31">        EditText usernameETxt = (EditText) findViewById(R.id.usernameETxt);</span>
+<span class="fc" id="L32">        EditText passwordETxt = (EditText) findViewById(R.id.passwordETxt);</span>
+<span class="fc" id="L33">        EditText homeGymEtx = findViewById(R.id.homeGymETxt);</span>
+
+<span class="fc" id="L35">        Button loginPageBtn = (Button) findViewById(R.id.signupToLoginPageBtn);</span>
+<span class="fc" id="L36">        Button createUserBtn = (Button) findViewById(R.id.createAccountBtn);</span>
+        //final String URL = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/people/create&quot;;
+        //final String URL = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/people/create?username&amp;password&quot;;
+<span class="fc" id="L39">        final String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people&quot;; //kyle endpoint</span>
+        //final String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/persons&quot;; //joe endpoint
+
+<span class="fc" id="L42">        createUserBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+                RequestQueue requestQueue;
+<span class="fc" id="L46">                requestQueue = Volley.newRequestQueue(UserSignup.this);</span>
+<span class="fc" id="L47">                flag = true;</span>
+<span class="fc" id="L48">                    String getURL = URL + &quot;/@/&quot; + usernameETxt.getText().toString();</span>
+
+<span class="fc" id="L50">                    JsonObjectRequest getUserRequest = new JsonObjectRequest(Request.Method.GET, getURL, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+                        @Override
+                        public void onResponse(JSONObject response) {
+<span class="nc" id="L53">                            Toast.makeText(UserSignup.this,&quot;Account already exists&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L54">                            flag = false;</span>
+<span class="nc" id="L55">                        }</span>
+<span class="fc" id="L56">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            try {
+                                //if there was an error, user is not in system and we post the user
+<span class="fc" id="L61">                                flag = true;</span>
+
+                                //post request
+<span class="fc" id="L64">                                JSONObject json = new JSONObject();</span>
+<span class="fc" id="L65">                                json.put(&quot;username&quot;, usernameETxt.getText().toString());</span>
+<span class="fc" id="L66">                                json.put(&quot;password&quot;, passwordETxt.getText().toString());</span>
+                                //json.put(&quot;myGym&quot;, homeGymEtx.getText().toString());
+                                //json.put(&quot;name&quot;, usernameETxt.getText().toString());
+
+
+<span class="fc" id="L71">                                JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL, json, new Response.Listener&lt;JSONObject&gt;() {</span>
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        try {
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">                                            if (flag) {</span>
+
+<span class="fc" id="L77">                                                String postMyWorkout = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot; + getIntent().getStringExtra(&quot;username&quot;) + &quot;/setHome/stateGym&quot;;</span>
+<span class="fc" id="L78">                                                StringRequest postMyWorkoutRequest = new StringRequest(Request.Method.POST, postMyWorkout, new Response.Listener&lt;String&gt;() {</span>
+                                                    @Override
+                                                    public void onResponse(String response) {
+<span class="fc" id="L81">                                                        Toast.makeText(UserSignup.this, &quot;myGym posted&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L82">                                                    }</span>
+<span class="fc" id="L83">                                                    }, new Response.ErrorListener() {</span>
+                                                    @Override
+                                                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L86">                                                        Toast.makeText(UserSignup.this, &quot;error posting myGym&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L87">                                                    }</span>
+                                                });
+                                                RequestQueue requestQueue;
+<span class="fc" id="L90">                                                requestQueue = Volley.newRequestQueue(UserSignup.this);</span>
+<span class="fc" id="L91">                                                requestQueue.add(postMyWorkoutRequest);</span>
+
+<span class="nc" id="L93">                                                Toast.makeText(UserSignup.this, response.getString(&quot;Account Created&quot;),</span>
+<span class="nc" id="L94">                                                        Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L95">                                                passwordETxt.setText(response.toString());</span>
+                                            }
+                                        }
+<span class="fc" id="L98">                                        catch (JSONException e) {</span>
+<span class="fc" id="L99">                                            e.printStackTrace();</span>
+<span class="nc" id="L100">                                        }</span>
+<span class="fc" id="L101">                                    }</span>
+<span class="fc" id="L102">                                }, new Response.ErrorListener() {</span>
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L105">                                        Toast.makeText(UserSignup.this, error.getMessage(), Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L106">                                    }</span>
+                                });
+
+
+<span class="fc" id="L110">                                requestQueue.add(request);</span>
+<span class="nc" id="L111">                            } catch (JSONException e) {</span>
+<span class="nc" id="L112">                                e.printStackTrace();</span>
+<span class="fc" id="L113">                            }</span>
+
+
+<span class="fc" id="L116">                        }</span>
+                    });
+
+
+<span class="fc" id="L120">                    requestQueue.add(getUserRequest);</span>
+
+
+
+
+<span class="fc" id="L125">            }</span>
+        });
+
+<span class="fc" id="L128">        loginPageBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L131">                Intent intent = new Intent(UserSignup.this, MainActivity.class);</span>
+<span class="fc" id="L132">                startActivity(intent);</span>
+<span class="fc" id="L133">                finish();</span>
+<span class="fc" id="L134">            }</span>
+        });
+        //hello
+
+
+<span class="fc" id="L139">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

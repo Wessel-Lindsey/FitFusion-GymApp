@@ -1,0 +1,164 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > RoutineController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Routine</a>
+</div>
+
+<h1>Coverage Summary for Class: RoutineController (com.example.fitfusion.Routine)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RoutineController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    82.4%
+  </span>
+  <span class="absValue">
+    (14/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Routine;
+&nbsp;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class RoutineController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    RoutineRepository routineRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+<b class="fc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="fc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    @PostMapping(path = &quot;/user/{username}/routines&quot;)
+&nbsp;    String createPersonRoutine(@PathVariable String username, @RequestBody Routine routine)
+&nbsp;    {
+<b class="fc">&nbsp;        if(routine == null)</b>
+<b class="nc">&nbsp;            return failure;</b>
+&nbsp;
+<b class="fc">&nbsp;        Person tempPerson = personRepository.findByUsername(username);</b>
+&nbsp;
+<b class="fc">&nbsp;        if(tempPerson == null)</b>
+<b class="nc">&nbsp;            return &quot;user not found&quot;;</b>
+&nbsp;
+<b class="fc">&nbsp;        tempPerson.addRoutine(routine);</b>
+&nbsp;
+<b class="fc">&nbsp;        routineRepository.save(routine);</b>
+<b class="fc">&nbsp;        personRepository.save(tempPerson);</b>
+&nbsp;
+<b class="fc">&nbsp;        return success;</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping(path = &quot;user/{username}/routines&quot;)
+&nbsp;    List&lt;Routine&gt; getPersonRoutines(@PathVariable String username)
+&nbsp;    {
+<b class="fc">&nbsp;        Person tempPerson = personRepository.findByUsername(username);</b>
+&nbsp;
+<b class="fc">&nbsp;        if(tempPerson == null)</b>
+<b class="nc">&nbsp;            return null;</b>
+&nbsp;
+<b class="fc">&nbsp;        return tempPerson.getRoutines();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(path = &quot;/routines&quot;)
+&nbsp;    List&lt;Routine&gt; getRoutines() {
+<b class="fc">&nbsp;        return routineRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

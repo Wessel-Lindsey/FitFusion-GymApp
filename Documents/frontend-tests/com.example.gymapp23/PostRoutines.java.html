@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PostRoutines.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">PostRoutines.java</span></div><h1>PostRoutines.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.Layout;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
+
+//BROKEN SOMEWHERE
+<span class="fc" id="L43">public class PostRoutines extends AppCompatActivity {</span>
+    public static final String GETUSERURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot;;
+    public static final String BASE_POSTROUTINE_URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/user/&quot;; ///user/{username}/routines
+    LinearLayout layout;
+    private Button workoutPG, trackRoutineBtn, addRoutine;
+    private EditText routienName;
+    private ArrayList&lt;String&gt; viewList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L53">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L54">        setContentView(R.layout.activity_post_routines);</span>
+
+<span class="fc" id="L56">        layout = findViewById(R.id.containerR);</span>
+<span class="fc" id="L57">        routienName = findViewById(R.id.customName);</span>
+<span class="fc" id="L58">        workoutPG = findViewById(R.id.routineToWorkout);</span>
+<span class="fc" id="L59">        trackRoutineBtn = findViewById(R.id.trackRoutineBtn);</span>
+<span class="fc" id="L60">        addRoutine = findViewById(R.id.addRoutine);</span>
+
+<span class="fc" id="L62">        viewList = new ArrayList&lt;&gt;();</span>
+
+        //get request for business
+<span class="fc" id="L65">        String URL = GETUSERURL + getIntent().getStringExtra(&quot;username&quot;);</span>
+<span class="fc" id="L66">        trackRoutineBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+//                add_workouts();
+                try {
+<span class="fc" id="L71">                    String postROUTINES = BASE_POSTROUTINE_URL + getIntent().getStringExtra(&quot;username&quot;) + &quot;/routines&quot;;</span>
+
+<span class="fc" id="L73">                    JSONObject routineJSON = new JSONObject();</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">                    if (!routienName.getText().toString().equals(null)) {</span>
+<span class="fc" id="L75">                        ((ViewGroup) layout).getChildCount();</span>
+//                        getLayoutInflater(layout);
+<span class="fc" id="L77">                        routineJSON.put(&quot;name&quot;, routienName.getText().toString());</span>
+                    }
+                    else {
+<span class="nc" id="L80">                        routineJSON.put(&quot;name&quot;, getIntent().getStringExtra(&quot;username&quot;) + &quot;'s_workout&quot;);</span>
+                    }
+
+<span class="fc" id="L83">                    routineJSON.put(&quot;workouts&quot;, new JSONArray());</span>
+
+<span class="fc" id="L85">                    JsonObjectRequest postEmptyRoutineRequest = new JsonObjectRequest(Request.Method.POST, BASE_POSTROUTINE_URL + getIntent().getStringExtra(&quot;username&quot;) + &quot;/routines&quot;, routineJSON, new Response.Listener&lt;JSONObject&gt;() {</span>
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+<span class="fc" id="L89">                                Toast.makeText(PostRoutines.this, &quot;Routine Made!&quot;, Toast.LENGTH_SHORT).show();</span>
+<span class="fc" id="L90">                                add_workouts();</span>
+                                //remove views here???
+<span class="nc" id="L92">                            } catch (Exception e) {</span>
+<span class="nc" id="L93">                                e.printStackTrace();</span>
+<span class="fc" id="L94">                            }</span>
+<span class="fc" id="L95">                        }</span>
+<span class="fc" id="L96">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+//                            Toast.makeText(PostRoutines.this, &quot;Error Posting your Event&quot;, Toast.LENGTH_SHORT).show();
+<span class="nc" id="L100">                        }</span>
+                    });
+
+                    RequestQueue requestQueue;
+<span class="fc" id="L104">                    requestQueue = Volley.newRequestQueue(PostRoutines.this);</span>
+<span class="fc" id="L105">                    requestQueue.add(postEmptyRoutineRequest);</span>
+
+<span class="nc" id="L107">                } catch (JSONException e) {</span>
+<span class="nc" id="L108">                    e.printStackTrace();</span>
+<span class="fc" id="L109">                }</span>
+<span class="fc" id="L110">            }</span>
+        });
+<span class="fc" id="L112">        workoutPG.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L115">                Intent i = new Intent(PostRoutines.this, PostWorkout.class);</span>
+<span class="fc" id="L116">                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L117">                startActivity(i);</span>
+<span class="fc" id="L118">                finish();</span>
+<span class="fc" id="L119">            }</span>
+        });
+<span class="fc" id="L121">        addRoutine.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v){
+<span class="fc" id="L124">                addCard();</span>
+<span class="fc" id="L125">            }</span>
+        });
+<span class="fc" id="L127">    }</span>
+    private void add_workouts() {
+<span class="fc" id="L129">        viewList.forEach((n) -&gt; Log.d(&quot;PostRoutines&quot;, n));</span>
+<span class="fc" id="L130">        Log.d(&quot;PostRoutines&quot;,&quot;&quot; + viewList.size());</span>
+<span class="fc" id="L131">        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest (Request.Method.GET, &quot;http://coms-309-067.class.las.iastate.edu:8080/user/&quot; + getIntent().getStringExtra(&quot;username&quot;) + &quot;/routines&quot;, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        JSONObject newRoutine;
+                        int id;
+
+                        try {
+<span class="fc" id="L138">                            newRoutine = findMaxID(response);</span>
+<span class="fc" id="L139">                            id = newRoutine.getInt(&quot;id&quot;);</span>
+<span class="fc" id="L140">                            Log.d(&quot;ID: &quot;, &quot;&quot; + id);</span>
+<span class="fc" id="L141">                            viewList.forEach((n) -&gt; Log.d(&quot;jsonArrayReq &quot;, n));</span>
+
+//                            for(int i = 0; i &lt; viewList.size(); i++){
+//                                String eachV = viewList.get(i);
+<span class="fc bfc" id="L145" title="All 2 branches covered.">                            for (String eachV : viewList) {</span>
+//                            viewList.forEac(((eachV) -&gt; {
+<span class="fc" id="L147">                                Log.d(&quot;In for each: &quot;, eachV);</span>
+
+<span class="fc" id="L149">                                JSONObject json = new JSONObject();</span>
+//                                Toast.makeText(PostRoutines.this, &quot;== &quot; + eachV, Toast.LENGTH_SHORT).show();
+<span class="fc" id="L151">                                json.put(&quot;name&quot;, eachV);</span>
+
+<span class="fc" id="L153">                                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest</span>
+<span class="fc" id="L154">                                        (Request.Method.POST, &quot;http://coms-309-067.class.las.iastate.edu:8080/routine/&quot; + id + &quot;/workout&quot;, json, new Response.Listener&lt;JSONObject&gt;() {</span>
+
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+//                                                Toast.makeText(PostRoutines.this, &quot;Posted: &quot; + eachV, Toast.LENGTH_SHORT).show();
+<span class="nc" id="L159">                                                viewList.remove(eachV);</span>
+<span class="nc" id="L160">                                            }</span>
+<span class="fc" id="L161">                                        }, new Response.ErrorListener() {</span>
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+//                                                Toast.makeText(PostRoutines.this, &quot;Error Posting Workout details&quot;, Toast.LENGTH_SHORT).show();
+<span class="fc" id="L165">                                            }</span>
+                                        });
+
+                                RequestQueue rq;
+<span class="fc" id="L169">                                rq = Volley.newRequestQueue(PostRoutines.this);</span>
+<span class="fc" id="L170">                                rq.add(jsonObjectRequest);</span>
+
+<span class="fc" id="L172">                            }</span>
+<span class="nc" id="L173">                        } catch (Exception e) {</span>
+//                            Toast.makeText(PostRoutines.this, &quot;Error ForEach&quot;, Toast.LENGTH_SHORT).show();
+<span class="fc" id="L175">                        }</span>
+<span class="fc" id="L176">                    }</span>
+<span class="fc" id="L177">                }, new Response.ErrorListener() {</span>
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(PostRoutines.this, &quot;Error getting User details&quot;, Toast.LENGTH_SHORT).show();
+<span class="nc" id="L182">                    }</span>
+                });
+
+        RequestQueue requestQueue;
+<span class="fc" id="L186">        requestQueue = Volley.newRequestQueue(PostRoutines.this);</span>
+<span class="fc" id="L187">        requestQueue.add(jsonArrayRequest);</span>
+
+//        layout.removeAllViewsInLayout();
+//        viewList.clear();
+
+<span class="fc" id="L192">    }</span>
+    private static JSONObject findMaxID(JSONArray arr) {
+<span class="fc" id="L194">        int maxID, curID, index = 0;</span>
+        try {
+<span class="fc" id="L196">            JSONObject max = arr.getJSONObject(0);</span>
+<span class="fc" id="L197">            maxID = max.getInt(&quot;id&quot;);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">            for (int i = 1; i &lt; arr.length(); i++) {</span>
+<span class="fc" id="L199">                curID = arr.getJSONObject(i).getInt(&quot;id&quot;);</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">                if (curID &gt; maxID) {</span>
+<span class="fc" id="L201">                    maxID = curID;</span>
+<span class="fc" id="L202">                    index = i;</span>
+                }
+            }
+
+<span class="fc" id="L206">            return arr.getJSONObject(index);</span>
+<span class="nc" id="L207">        } catch (JSONException e) {</span>
+<span class="nc" id="L208">            throw new RuntimeException(e);</span>
+        }
+
+    }
+    private void addCard(){
+<span class="fc" id="L213">        View view = getLayoutInflater().inflate(R.layout.workout_box, null);</span>
+<span class="fc" id="L214">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L215">        EditText workout = view.findViewById(R.id.workout);</span>
+<span class="fc" id="L216">        EditText weight = view.findViewById(R.id.weight);</span>
+<span class="fc" id="L217">        EditText sets = view.findViewById(R.id.sets);</span>
+<span class="fc" id="L218">        EditText reps = view.findViewById(R.id.reps);</span>
+<span class="fc" id="L219">        Button btn = view.findViewById(R.id.btn);</span>
+<span class="fc" id="L220">        Switch s = view.findViewById(R.id.switchWorkout);</span>
+
+<span class="fc" id="L222">        ((ViewGroup) (nameView).getParent()).removeView(nameView);</span>
+<span class="fc" id="L223">        ((ViewGroup) (weight).getParent()).removeView(weight);</span>
+<span class="fc" id="L224">        ((ViewGroup) (sets).getParent()).removeView(sets);</span>
+<span class="fc" id="L225">        ((ViewGroup) (reps).getParent()).removeView(reps);</span>
+<span class="fc" id="L226">        ((ViewGroup) (s).getParent()).removeView(s);</span>
+<span class="fc" id="L227">        workout.addTextChangedListener(new TextWatcher() {</span>
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+<span class="fc" id="L230">                Log.d(&quot;TEXT CHANGE &quot;, &quot;&gt; &quot; + workout.getText().toString());</span>
+<span class="fc" id="L231">                viewList.remove(workout.getText().toString());</span>
+<span class="fc" id="L232">            }</span>
+            @Override
+<span class="fc" id="L234">            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}</span>
+            @Override
+            public void afterTextChanged(Editable editable) {
+<span class="fc" id="L237">                Log.d(&quot;TEXT CHANGE &quot;, &quot;&lt; &quot; + workout.getText().toString());</span>
+<span class="fc" id="L238">                viewList.add(workout.getText().toString());</span>
+<span class="fc" id="L239">            }</span>
+        });
+<span class="fc" id="L241">        btn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L244">                Log.d(&quot;REMOVE &quot;, workout.getText().toString());</span>
+<span class="nc" id="L245">                viewList.remove(workout.getText().toString());//workout.getText().toString());</span>
+<span class="nc" id="L246">                layout.removeView(view);</span>
+<span class="nc" id="L247">            }</span>
+        });
+
+<span class="fc" id="L250">        layout.addView(view);</span>
+<span class="fc" id="L251">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

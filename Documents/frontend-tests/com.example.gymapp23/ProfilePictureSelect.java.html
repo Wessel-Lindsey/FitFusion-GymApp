@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfilePictureSelect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">ProfilePictureSelect.java</span></div><h1>ProfilePictureSelect.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import android.util.Log;
+import android.widget.Toast;
+import com.android.volley.Request;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+<span class="fc" id="L32">public class ProfilePictureSelect extends AppCompatActivity {</span>
+    private ImageView pic1, pic2, pic3;
+<span class="fc" id="L34">    private String TAG = ProfilePictureSelect.class.getSimpleName(), profilePicURL;</span>
+    private Button backBtn;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L38">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L39">        setContentView(R.layout.activity_profile_picture_select);</span>
+
+<span class="fc" id="L41">        profilePicURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot; + getIntent().getStringExtra(&quot;username&quot;) + &quot;/profilePicture&quot;;</span>
+
+
+<span class="fc" id="L44">        pic1 = findViewById(R.id.picture1);</span>
+<span class="fc" id="L45">        pic2 = findViewById(R.id.picture2);</span>
+<span class="fc" id="L46">        pic3 = findViewById(R.id.picture3);</span>
+<span class="fc" id="L47">        backBtn = findViewById(R.id.profileSelectBackBtn);</span>
+
+<span class="fc" id="L49">        backBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L52">                Intent i = new Intent(ProfilePictureSelect.this, ProfilePage.class);</span>
+<span class="fc" id="L53">                i.putExtra(&quot;username&quot;, getIntent().getStringExtra(&quot;username&quot;));</span>
+<span class="fc" id="L54">                startActivity(i);</span>
+<span class="fc" id="L55">                finish();</span>
+<span class="fc" id="L56">            }</span>
+        });
+
+<span class="fc" id="L59">        pic1.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //uploadProfilePic(&quot;drawable/user_profile.png&quot;);
+
+<span class="fc" id="L64">                InputStream inputStream = getResources().openRawResource(R.raw.user_profile);</span>
+<span class="fc" id="L65">                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);</span>
+
+// Assume you have the required permissions to write to external storage
+<span class="fc" id="L68">                File file = new File(getExternalFilesDir(null), &quot;user_profile.png&quot;);</span>
+
+<span class="fc" id="L70">                try (OutputStream os = new FileOutputStream(file)) {</span>
+<span class="fc" id="L71">                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);</span>
+<span class="nc" id="L72">                } catch (IOException e) {</span>
+<span class="nc" id="L73">                    e.printStackTrace();</span>
+<span class="fc" id="L74">                }</span>
+
+                // Now you can use 'file' as a regular file with a file path
+<span class="fc" id="L77">                String filePath = file.getAbsolutePath();</span>
+<span class="fc" id="L78">                uploadImage(filePath);</span>
+<span class="fc" id="L79">                Log.d(&quot;Profile Pic Upload&quot;, &quot;pic 1 uploaded&quot;);</span>
+
+<span class="fc" id="L81">            }</span>
+        });
+<span class="fc" id="L83">        pic2.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //uploadProfilePic(&quot;drawable/user_profile.png&quot;);
+
+<span class="fc" id="L88">                InputStream inputStream = getResources().openRawResource(R.raw.aiprofilepic1);</span>
+<span class="fc" id="L89">                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);</span>
+
+// Assume you have the required permissions to write to external storage
+<span class="fc" id="L92">                File file = new File(getExternalFilesDir(null), &quot;aiprofilepic1.png&quot;);</span>
+
+<span class="fc" id="L94">                try (OutputStream os = new FileOutputStream(file)) {</span>
+<span class="fc" id="L95">                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);</span>
+<span class="nc" id="L96">                } catch (IOException e) {</span>
+<span class="nc" id="L97">                    e.printStackTrace();</span>
+<span class="fc" id="L98">                }</span>
+
+                // Now you can use 'file' as a regular file with a file path
+<span class="fc" id="L101">                String filePath = file.getAbsolutePath();</span>
+<span class="fc" id="L102">                uploadImage(filePath);</span>
+<span class="fc" id="L103">                Log.d(&quot;Profile Pic Upload&quot;, &quot;pic 2 uploaded&quot;);</span>
+
+<span class="fc" id="L105">            }</span>
+        });
+<span class="fc" id="L107">        pic3.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //uploadProfilePic(&quot;drawable/user_profile.png&quot;);
+
+<span class="fc" id="L112">                InputStream inputStream = getResources().openRawResource(R.raw.aiprofilepic2);</span>
+<span class="fc" id="L113">                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);</span>
+
+// Assume you have the required permissions to write to external storage
+<span class="fc" id="L116">                File file = new File(getExternalFilesDir(null), &quot;aiprofile2.png&quot;);</span>
+
+<span class="fc" id="L118">                try (OutputStream os = new FileOutputStream(file)) {</span>
+<span class="fc" id="L119">                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);</span>
+<span class="nc" id="L120">                } catch (IOException e) {</span>
+<span class="nc" id="L121">                    e.printStackTrace();</span>
+<span class="fc" id="L122">                }</span>
+
+                // Now you can use 'file' as a regular file with a file path
+<span class="fc" id="L125">                String filePath = file.getAbsolutePath();</span>
+<span class="fc" id="L126">                uploadImage(filePath);</span>
+<span class="fc" id="L127">                Log.d(&quot;Profile Pic Upload&quot;, &quot;pic 3 uploaded&quot;);</span>
+
+<span class="fc" id="L129">            }</span>
+        });
+
+<span class="fc" id="L132">    }</span>
+
+
+
+    /**
+     * Uploads an image to a remote server using a multipart Volley request.
+     *
+     * This method creates and executes a multipart request using the Volley library to upload
+     * an image to a predefined server endpoint. The image data is sent as a byte array and the
+     * request is configured to handle multipart/form-data content type. The server is expected
+     * to accept the image with a specific key (&quot;image&quot;) in the request.
+     *
+     */
+    private void uploadImage(String pathName){
+
+<span class="fc" id="L147">        Uri imageUri = Uri.fromFile(new File(pathName));</span>
+
+<span class="fc" id="L149">        Log.d(&quot;uploadImage Debug&quot;, &quot;URI CREATED&quot; + imageUri.toString());</span>
+
+<span class="fc" id="L151">        byte[] imageData = convertImageUriToBytes(imageUri);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        assert imageData != null;</span>
+<span class="fc" id="L153">        Log.d(&quot;IMAGE DATA&quot;, &quot;Length: &quot; + imageData.length);</span>
+<span class="fc" id="L154">        MultipartRequest multipartRequest = new MultipartRequest(</span>
+                Request.Method.POST,
+                profilePicURL,
+                imageData,
+                response -&gt; {
+                    // Handle response
+<span class="fc" id="L160">                    Toast.makeText(ProfilePictureSelect.this, response,Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L161">                    Log.d(&quot;Upload&quot;, &quot;Response: &quot; + response);</span>
+<span class="fc" id="L162">                },</span>
+                error -&gt; {
+                    // Handle error
+<span class="nc" id="L165">                    String errorMessage = error.getMessage();</span>
+<span class="nc bnc" id="L166" title="All 4 branches missed.">                    if (errorMessage != null &amp;&amp; !errorMessage.isEmpty()) {</span>
+<span class="nc" id="L167">                        Toast.makeText(ProfilePictureSelect.this, errorMessage, Toast.LENGTH_LONG).show();</span>
+<span class="nc" id="L168">                        Log.e(&quot;Upload&quot;, &quot;Error: &quot; + error.getMessage());</span>
+                    } else {
+                        // Handle the case where the error message is null or empty
+<span class="nc" id="L171">                        Log.e(&quot;Upload&quot;, &quot;Error message is null or empty&quot;);</span>
+                    }
+<span class="nc" id="L173">                }</span>
+        );
+<span class="fc" id="L175">        RequestQueue requestQueue = Volley.newRequestQueue(this);</span>
+<span class="fc" id="L176">        requestQueue.add(multipartRequest);</span>
+<span class="fc" id="L177">    }</span>
+
+    /**
+     * Converts the given image URI to a byte array.
+     *
+     * This method takes a URI pointing to an image and converts it into a byte array. The conversion
+     * involves opening an InputStream from the content resolver using the provided URI, and then
+     * reading the content into a byte array. This byte array represents the binary data of the image,
+     * which can be used for various purposes such as uploading the image to a server.
+     *
+     * @param imageUri The URI of the image to be converted. This should be a content URI that points
+     *                 to an image resource accessible through the content resolver.
+     * @return A byte array representing the image data, or null if the conversion fails.
+     * @throws IOException If an I/O error occurs while reading from the InputStream.
+     */
+    private byte[] convertImageUriToBytes(Uri imageUri) {
+        try {
+<span class="fc" id="L194">            InputStream inputStream = getContentResolver().openInputStream(imageUri);</span>
+<span class="fc" id="L195">            ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();</span>
+
+<span class="fc" id="L197">            int bufferSize = 1024;</span>
+<span class="fc" id="L198">            byte[] buffer = new byte[bufferSize];</span>
+
+            int len;
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            while ((len = inputStream.read(buffer)) != -1) {</span>
+<span class="fc" id="L202">                byteBuffer.write(buffer, 0, len);</span>
+            }
+
+<span class="fc" id="L205">            return byteBuffer.toByteArray();</span>
+<span class="nc" id="L206">        } catch (IOException e) {</span>
+<span class="nc" id="L207">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L209">        return null;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

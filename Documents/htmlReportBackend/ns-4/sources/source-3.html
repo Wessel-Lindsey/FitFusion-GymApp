@@ -1,0 +1,199 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Groupchat</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Chat</a>
+</div>
+
+<h1>Coverage Summary for Class: Groupchat (com.example.fitfusion.Chat)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Groupchat</td>
+<td class="coverageStat">
+  <span class="percent">
+    15.4%
+  </span>
+  <span class="absValue">
+    (2/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    18.8%
+  </span>
+  <span class="absValue">
+    (3/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Groupchat$HibernateInstantiator$ZDikfLxl</td>
+  </tr>
+  <tr>
+    <td class="name">Groupchat$HibernateProxy$GKUoHzXb</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    15.4%
+  </span>
+  <span class="absValue">
+    (2/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    18.8%
+  </span>
+  <span class="absValue">
+    (3/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Chat;
+&nbsp;
+&nbsp;import com.example.fitfusion.Messages.Message;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class Groupchat {
+&nbsp;
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    @Id
+&nbsp;    private int id;
+&nbsp;
+&nbsp;    @OneToOne
+&nbsp;    @JsonIgnore
+&nbsp;    private ConversationGroup conversationGroup;
+&nbsp;
+&nbsp;    @Column(unique = true)
+&nbsp;    private String groupname;
+&nbsp;
+<b class="fc">&nbsp;    private Set&lt;String&gt; blacklist = new HashSet&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;    private Set&lt;String&gt; groupMembers = new HashSet&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;    public Groupchat(String groupname) {</b>
+<b class="nc">&nbsp;        this.groupname = groupname;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Groupchat() {</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ConversationGroup getConversationGroup() {
+<b class="nc">&nbsp;        return conversationGroup;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setConversationGroup(ConversationGroup conversationGroup) {
+<b class="nc">&nbsp;        this.conversationGroup = conversationGroup;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(int id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;     public Set&lt;String&gt; getGroupMembers() {
+<b class="nc">&nbsp;        return groupMembers;</b>
+&nbsp;     }
+&nbsp;
+&nbsp;     public void setGroupMembers(Set&lt;String&gt; groupMembers) {
+<b class="nc">&nbsp;        this.groupMembers = groupMembers;</b>
+&nbsp;     }
+&nbsp;
+&nbsp;     public void addGroupMember(String groupMember)
+&nbsp;     {
+<b class="nc">&nbsp;     groupMembers.add(groupMember);</b>
+&nbsp;     }
+&nbsp;
+&nbsp;    public String getGroupname() {
+<b class="nc">&nbsp;        return groupname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setGroupname(String groupname) {
+<b class="nc">&nbsp;        this.groupname = groupname;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Set&lt;String&gt; getBlacklist() {
+<b class="nc">&nbsp;        return blacklist;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addToBlacklist(String name) {
+<b class="nc">&nbsp;        blacklist.add(name);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

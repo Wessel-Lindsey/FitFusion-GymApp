@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BusinessProfilePage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">BusinessProfilePage.java</span></div><h1>BusinessProfilePage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Html;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityBusinessProfilePageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+//a business profile page is its &quot;homepage&quot;
+//access its groupchat
+//have the businesses information to view
+<span class="fc" id="L32">public class BusinessProfilePage extends AppCompatActivity {</span>
+
+<span class="fc" id="L34">    public final String GETBUSINESSURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/businesses/@/&quot;;</span>
+    private TextView username, feed, businessInfo;
+
+    private String feedStr;
+    private FloatingActionButton groupChatBtn, postBtn;
+    private ActivityBusinessProfilePageBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L43">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L44">        binding = ActivityBusinessProfilePageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L45">        setContentView(binding.getRoot());</span>
+
+<span class="fc" id="L47">        feed = findViewById(R.id.businessFeedTxt);</span>
+<span class="fc" id="L48">        postBtn = findViewById(R.id.postEventButton);</span>
+<span class="fc" id="L49">        businessInfo = findViewById(R.id.businessInfoTxt);</span>
+<span class="fc" id="L50">        groupChatBtn = findViewById(R.id.myGymChat_businessProfilePage);</span>
+        //feed = findViewById(R.id.eventPosts);
+<span class="fc" id="L52">        String businessName = getIntent().getStringExtra(&quot;businessName&quot;);</span>
+<span class="fc" id="L53">        username = findViewById(R.id.businessNameTxt);</span>
+<span class="fc" id="L54">        username.setText(businessName);</span>
+
+        //get request for business
+<span class="fc" id="L57">        String URL = GETBUSINESSURL + businessName;</span>
+<span class="fc" id="L58">        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest</span>
+<span class="fc" id="L59">                (Request.Method.GET, URL, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //populate profile page
+                        try {
+<span class="fc" id="L65">                            feedStr = &quot;&lt;b&gt;&lt;span style=color:#008080&gt; Name: &lt;/span&gt;&lt;/b&gt;&quot; + response.getString(&quot;businessName&quot;) + &quot;&lt;br&gt;&quot;;</span>
+<span class="fc" id="L66">                            feedStr += &quot;&lt;b&gt;&lt;span style=color:#008080&gt; Address: &lt;/span&gt;&lt;/b&gt;&quot; + response.getString(&quot;address&quot;) + &quot;&lt;br&gt;&quot;;</span>
+<span class="fc" id="L67">                            feedStr += &quot;&lt;b&gt;&lt;span style=color:#008080&gt; City: &lt;/span&gt;&lt;/b&gt;&quot; + response.getString(&quot;city&quot;) + &quot;&lt;br&gt;&quot;;</span>
+<span class="fc" id="L68">                            feedStr += &quot;&lt;b&gt;&lt;span style=color:#008080&gt; Zip: &lt;/span&gt;&lt;/b&gt;&quot; + response.getString(&quot;zipcode&quot;) + &quot;&lt;br&gt;&quot;;</span>
+
+<span class="fc" id="L70">                            businessInfo.setText(Html.fromHtml(feedStr));</span>
+//                            feedStr = &quot;&quot;;
+//                            //just to show the scroll feature
+//                            for(int i = 0; i &lt; 100; i++) {
+//                                feedStr += i + &quot;\n&quot;;
+//                            }
+//
+//                            feed.setText(feedStr);
+<span class="nc" id="L78">                        } catch (JSONException e) {</span>
+<span class="nc" id="L79">                            throw new RuntimeException(e);</span>
+<span class="fc" id="L80">                        }</span>
+<span class="fc" id="L81">                        Toast.makeText(BusinessProfilePage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+
+
+<span class="fc" id="L84">                    }</span>
+<span class="fc" id="L85">                }, new Response.ErrorListener() {</span>
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L89">                        Toast.makeText(BusinessProfilePage.this, &quot;Error getting business details&quot;, Toast.LENGTH_LONG).show();</span>
+<span class="fc" id="L90">                    }</span>
+                });
+
+<span class="fc" id="L93">        JsonArrayRequest postsGETRequest = new JsonArrayRequest(Request.Method.GET, URL + &quot;/posts&quot;, null, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">                    if (response.length() == 0) {</span>
+<span class="nc" id="L98">                        feed.setText(&quot;No Posts for this business yet&quot;);</span>
+                    }
+                    else {
+<span class="fc" id="L101">                        feedStr = &quot;&quot;;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">                        for (int i = response.length()-1; i &gt;= 0; i--) {</span>
+
+<span class="fc" id="L104">                            JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L105">                            String title = object.getString(&quot;title&quot;);</span>
+<span class="fc" id="L106">                            String message = object.getString(&quot;message&quot;);</span>
+<span class="fc" id="L107">                            int likes = object.getInt(&quot;likes&quot;);</span>
+<span class="fc" id="L108">                            feedStr += &quot;&lt;b&gt; &lt;span style=color:black&gt;&quot;+ title + &quot;:&lt;/span&gt; &lt;/b&gt;&lt;br&gt;&quot;</span>
+                                    + message + &quot;&lt;br&gt;&lt;span style=color:#505050&gt; &quot; +
+                                    &quot;Likes: &lt;/span&gt;&lt;b&gt;&lt;span style=color:#F06060&gt;&quot; + likes + &quot;&lt;/span&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&quot;;
+
+                        }
+<span class="fc" id="L113">                        feed.setText(Html.fromHtml(feedStr));</span>
+                    }
+                }
+<span class="nc" id="L116">                catch (JSONException e) {</span>
+<span class="nc" id="L117">                    e.printStackTrace();</span>
+<span class="fc" id="L118">                }</span>
+<span class="fc" id="L119">            }</span>
+<span class="fc" id="L120">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+<span class="fc" id="L124">            }</span>
+        });
+
+
+        RequestQueue requestQueue;
+<span class="fc" id="L129">        requestQueue = Volley.newRequestQueue(BusinessProfilePage.this);</span>
+<span class="fc" id="L130">        requestQueue.add(jsonObjectRequest);</span>
+<span class="fc" id="L131">        requestQueue.add(postsGETRequest);</span>
+
+
+<span class="fc" id="L134">        groupChatBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //open MyGymChat
+<span class="nc" id="L138">                Intent myGymChat = new Intent(BusinessProfilePage.this, MyGymChat.class);</span>
+<span class="nc" id="L139">                myGymChat.putExtra(&quot;username&quot;, businessName);</span>
+<span class="nc" id="L140">                myGymChat.putExtra(&quot;myGym&quot;, businessName);</span>
+<span class="nc" id="L141">                startActivity(myGymChat);</span>
+<span class="nc" id="L142">                finish();</span>
+<span class="nc" id="L143">            }</span>
+        });
+
+<span class="fc" id="L146">        postBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+                //go to homepage
+<span class="fc" id="L150">                Intent homepage = new Intent(BusinessProfilePage.this, PostEvent.class);</span>
+<span class="fc" id="L151">                homepage.putExtra(&quot;businessName&quot;, businessName);</span>
+<span class="fc" id="L152">                startActivity(homepage);</span>
+<span class="fc" id="L153">                finish();</span>
+<span class="fc" id="L154">            }</span>
+        });
+
+<span class="fc" id="L157">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

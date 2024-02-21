@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FriendRequest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Friendships</a>
+</div>
+
+<h1>Coverage Summary for Class: FriendRequest (com.example.fitfusion.Friendships)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FriendRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (2/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.5%
+  </span>
+  <span class="absValue">
+    (5/13)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FriendRequest$HibernateInstantiator$Y6H0vnXn</td>
+  </tr>
+  <tr>
+    <td class="name">FriendRequest$HibernateProxy$KPl6NR7G</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (2/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.5%
+  </span>
+  <span class="absValue">
+    (5/13)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Friendships;
+&nbsp;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.ManyToOne;
+&nbsp;
+&nbsp;@Entity
+&nbsp;
+&nbsp;public class FriendRequest {
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    @Id
+&nbsp;    private int id;
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    private Person sender;
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    private Person receiver;
+&nbsp;
+&nbsp;    private long sentAt;
+&nbsp;
+<b class="fc">&nbsp;    public FriendRequest(Person sender, Person receiver) {</b>
+<b class="fc">&nbsp;        this.sender = sender;</b>
+<b class="fc">&nbsp;        this.receiver = receiver;</b>
+<b class="fc">&nbsp;        sentAt = System.currentTimeMillis();</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public FriendRequest() {</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(int id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Person getSender() {
+<b class="nc">&nbsp;        return sender;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSender(Person sender) {
+<b class="nc">&nbsp;        this.sender = sender;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Person getReceiver() {
+<b class="nc">&nbsp;        return receiver;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setReceiver(Person receiver) {
+<b class="nc">&nbsp;        this.receiver = receiver;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public long getSentAt() {
+<b class="nc">&nbsp;        return sentAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setSentAt(long sentAt) {
+<b class="nc">&nbsp;        this.sentAt = sentAt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,359 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChatServerDM</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Websockets</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatServerDM (com.example.fitfusion.Websockets)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatServerDM</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (2/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.6%
+  </span>
+  <span class="absValue">
+    (4/71)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Websockets;
+&nbsp;
+&nbsp;import com.example.fitfusion.Chat.ConversationDM;
+&nbsp;import com.example.fitfusion.Chat.ConversationDMRepository;
+&nbsp;import com.example.fitfusion.Messages.Message;
+&nbsp;import com.example.fitfusion.Messages.MessageRepository;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.Hashtable;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@ServerEndpoint(value = &quot;/chat/{username}/DM/{recipient}&quot;, configurator = CustomSpringConfigurator.class)
+<b class="fc">&nbsp;public class ChatServerDM {</b>
+&nbsp;
+&nbsp;    // This keeps track of the relationships for users. If two users are connected
+&nbsp;    // to a chatroom there should
+&nbsp;    // be two instances in the map where its user, recipient and recipient, user
+<b class="fc">&nbsp;    private static Map&lt;String, String&gt; userPairs = new Hashtable&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // Store all socket session and their corresponding username
+&nbsp;    // Two maps for the ease of retrieval by key
+<b class="fc">&nbsp;    private static Map&lt;Session, String&gt; sessionUsernameMap = new Hashtable&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static Map&lt;String, Session&gt; usernameSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // This is message history
+&nbsp;    // private UserDMHistory dmHistory;
+&nbsp;    private ConversationDM dmConversation;
+&nbsp;    @Autowired
+&nbsp;    MessageRepository messageRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ConversationDMRepository DMConvoRepo;
+&nbsp;
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;username&quot;) String username,
+&nbsp;            @PathParam(&quot;recipient&quot;) String recipient)
+&nbsp;            throws IOException {
+&nbsp;
+<b class="nc">&nbsp;        Person curPerson = personRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        Person otherPerson = personRepository.findByUsername(recipient);</b>
+&nbsp;
+&nbsp;        // Handle the case of a duplicate username
+<b class="nc">&nbsp;        if (usernameSessionMap.containsKey(username)) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;Username already exists&quot;);</b>
+<b class="nc">&nbsp;            session.close();</b>
+<b class="nc">&nbsp;        } else if (curPerson == null) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;User not registered&quot;);</b>
+<b class="nc">&nbsp;            session.close();</b>
+<b class="nc">&nbsp;        } else if (otherPerson == null) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;Recipient is not registered&quot;);</b>
+<b class="nc">&nbsp;            session.close();</b>
+&nbsp;        } else {
+&nbsp;            // map current session with username
+<b class="nc">&nbsp;            sessionUsernameMap.put(session, username);</b>
+&nbsp;
+&nbsp;            // map current username with session
+<b class="nc">&nbsp;            usernameSessionMap.put(username, session);</b>
+&nbsp;
+&nbsp;            // put who you want to chat with in the userPairs map
+<b class="nc">&nbsp;            userPairs.put(username, recipient);</b>
+&nbsp;
+&nbsp;            // send to the user joining in
+&nbsp;            // sendMessageToParticularUser(username, &quot;Welcome to the chat server, &quot; +
+&nbsp;            // username);
+&nbsp;
+<b class="nc">&nbsp;            Session otherfella = usernameSessionMap.get(recipient);</b>
+<b class="nc">&nbsp;            dmConversation = DMConvoRepo.findConversationByUsernames(username, recipient);</b>
+&nbsp;
+&nbsp;            // Start of conversation
+<b class="nc">&nbsp;            if (dmConversation == null) {</b>
+<b class="nc">&nbsp;                dmConversation = new ConversationDM(curPerson, otherPerson);</b>
+&nbsp;                //sendMessageToParticularUser(username, &quot;start of new conversation&quot;);
+&nbsp;
+<b class="nc">&nbsp;                Message message = new Message();</b>
+<b class="nc">&nbsp;                if(otherfella == null)</b>
+&nbsp;                {
+<b class="nc">&nbsp;                    message.setUserName(&quot;FitFusion&quot;);</b>
+<b class="nc">&nbsp;                    message.setContent(&quot;Start of new conversation&quot;);</b>
+<b class="nc">&nbsp;                    sendMessageToParticularUser(username, message.getContent());</b>
+&nbsp;                    //messageRepository.save(message);
+<b class="nc">&nbsp;                    dmConversation.addMessage(message);</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                DMConvoRepo.save(dmConversation);</b>
+&nbsp;
+<b class="nc">&nbsp;            }</b>
+&nbsp;            // else conversation already started get messages
+&nbsp;            else {
+&nbsp;
+&nbsp;                // dmConversation = DMConvoRepo.findConversationByUsernames(username,
+&nbsp;                // recipient);
+<b class="nc">&nbsp;                List&lt;Message&gt; dmMessages = dmConversation.getMessages();</b>
+&nbsp;
+&nbsp;                // Will send empty if dmMessages is null
+<b class="nc">&nbsp;                sendMessageToParticularUser(username, getMessageHistory(dmMessages));</b>
+&nbsp;
+&nbsp;            }
+&nbsp;
+&nbsp;            // ---Checking state of chatroom---
+&nbsp;            // case 1: the other guy isn&#39;t in the chatroom
+<b class="nc">&nbsp;            if (otherfella == null) {</b>
+<b class="nc">&nbsp;                sendMessageToParticularUser(username, &quot;Other user not online&quot;);</b>
+&nbsp;            }
+&nbsp;            // case 2: the other guy is in the chatroom with you
+<b class="nc">&nbsp;            else if (userPairs.get(recipient).equals(username)) {</b>
+<b class="nc">&nbsp;                sendMessageToParticularUser(username, recipient + &quot; has been awaiting your arrival&quot;);</b>
+<b class="nc">&nbsp;                sendMessageToParticularUser(recipient, username + &quot; has Joined the Chat&quot;);</b>
+&nbsp;            }
+&nbsp;            // case 3: the other guy is in another chatroom with someone else
+&nbsp;            else {
+<b class="nc">&nbsp;                sendMessageToParticularUser(username, &quot;Other user is talking to someone he likes more&quot;);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // @Transactional
+&nbsp;    // private List&lt;Message&gt; getOldMessages(UserDMHistory dmHistory) {
+&nbsp;    // try{
+&nbsp;    // List&lt;Message&gt; messages = dmHistory.getMessages();
+&nbsp;    // return messages;
+&nbsp;    // } catch (LazyInitializationException all)
+&nbsp;    // {
+&nbsp;    // return null;
+&nbsp;    // }
+&nbsp;    //
+&nbsp;    // }
+&nbsp;
+&nbsp;    private String getMessageHistory(List&lt;Message&gt; dmMessages) {
+<b class="nc">&nbsp;        StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;        if (dmMessages.size() == 0) {</b>
+<b class="nc">&nbsp;            sb.append(&quot;Start of new conversation&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            for (Message message : dmMessages) {</b>
+<b class="nc">&nbsp;                sb.append(message.getUserName() + &quot;: &quot; + message.getContent() + &quot;\n&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return sb.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, @PathParam(&quot;recipient&quot;) String recipient, String message)
+&nbsp;            throws IOException {
+&nbsp;
+&nbsp;        // get the username by session
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+<b class="nc">&nbsp;        Session otherfella = usernameSessionMap.get(recipient);</b>
+&nbsp;
+&nbsp;        // case 1: the other guy isn&#39;t connected to the server
+<b class="nc">&nbsp;        if (otherfella == null) {</b>
+<b class="nc">&nbsp;            sendMessageToParticularUser(username, &quot;Other user not online&quot;);</b>
+&nbsp;        }
+&nbsp;        // case 2: the other guy is in the chatroom with you
+<b class="nc">&nbsp;        else if (userPairs.get(recipient).equals(username)) {</b>
+<b class="nc">&nbsp;            sendMessageToParticularUser(username, username + &quot;: &quot; + message);</b>
+<b class="nc">&nbsp;            sendMessageToParticularUser(recipient, username + &quot;: &quot; + message);</b>
+&nbsp;        }
+&nbsp;        // case 3: the other guy is in another chatroom with someone else
+&nbsp;        else {
+<b class="nc">&nbsp;            sendMessageToParticularUser(username, &quot;Other user is talking to someone he likes more &quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Message sentMessage = new Message(username, message);</b>
+&nbsp;
+<b class="nc">&nbsp;        dmConversation.addMessage(sentMessage);</b>
+<b class="nc">&nbsp;        messageRepository.save(sentMessage);</b>
+<b class="nc">&nbsp;        DMConvoRepo.save(dmConversation);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the closure of a WebSocket connection.
+&nbsp;     *
+&nbsp;     * @param session The WebSocket session that is being closed.
+&nbsp;     */
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session, @PathParam(&quot;recipient&quot;) String recipient) throws IOException {
+&nbsp;
+&nbsp;        // get the username from session-username mapping
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+&nbsp;        // remove user from memory mappings
+<b class="nc">&nbsp;        sessionUsernameMap.remove(session);</b>
+<b class="nc">&nbsp;        usernameSessionMap.remove(username);</b>
+&nbsp;
+&nbsp;        // send the message to chat, aka both users
+&nbsp;        // sendMessageToParticularUser(username, username + &quot; disconnected&quot;);
+&nbsp;
+<b class="nc">&nbsp;        if (usernameSessionMap.get(recipient) != null) {</b>
+<b class="nc">&nbsp;            sendMessageToParticularUser(recipient, username + &quot; disconnected&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // delete the relationship in the userPairs
+<b class="nc">&nbsp;        userPairs.remove(username);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles WebSocket errors that occur during the connection.
+&nbsp;     *
+&nbsp;     * @param session   The WebSocket session where the error occurred.
+&nbsp;     * @param throwable The Throwable representing the error condition.
+&nbsp;     */
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) {
+&nbsp;
+&nbsp;        // get the username from session-username mapping
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+&nbsp;        // do error handling here
+&nbsp;        // logger.info(&quot;[onError]&quot; + username + &quot;: &quot; + throwable.getMessage());
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sends a message to a specific user in the chat (DM).
+&nbsp;     *
+&nbsp;     * @param username The username of the recipient.
+&nbsp;     * @param message  The message to be sent.
+&nbsp;     */
+&nbsp;    private void sendMessageToParticularUser(String username, String message) {
+&nbsp;        try {
+<b class="nc">&nbsp;            usernameSessionMap.get(username).getBasicRemote().sendText(message);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;            // logger.info(&quot;[DM Exception] &quot; + e.getMessage());
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Broadcasts a message to all users in all chats
+&nbsp;     *
+&nbsp;     * @param message The message to be broadcasted to all users.
+&nbsp;     */
+&nbsp;    private void broadcast(String message) {
+<b class="nc">&nbsp;        sessionUsernameMap.forEach((session, username) -&gt; {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                session.getBasicRemote().sendText(message);</b>
+<b class="nc">&nbsp;            } catch (IOException e) {</b>
+&nbsp;                // logger.info(&quot;[Broadcast Exception] &quot; + e.getMessage());
+<b class="nc">&nbsp;            }</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

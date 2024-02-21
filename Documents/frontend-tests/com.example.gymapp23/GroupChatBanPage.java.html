@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GroupChatBanPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">GroupChatBanPage.java</span></div><h1>GroupChatBanPage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityGroupChatBanPageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
+
+
+<span class="fc" id="L36">public class GroupChatBanPage extends AppCompatActivity {</span>
+    AlertDialog dialog;
+    Button search, NAVRight;
+    LinearLayout layout, blackListCards;
+    ScrollView blackListsSV;
+    TextView baselineText, blacklistTextview;
+    EditText searchName, groupname;
+<span class="fc" id="L43">    private String TAG = MainActivity.class.getSimpleName();</span>
+<span class="fc" id="L44">    String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people&quot;;</span>
+    String userName;
+    private Button NAVLeft, viewBlacklist;
+
+
+
+    private ActivityGroupChatBanPageBinding binding;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L53">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L54">        binding = ActivityGroupChatBanPageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L55">        setContentView(binding.getRoot());</span>
+
+<span class="fc" id="L57">        Intent intent = getIntent();</span>
+<span class="fc" id="L58">        userName = intent.getStringExtra(&quot;username&quot;);</span>
+
+<span class="fc" id="L60">        search = findViewById(R.id.searchBTN);</span>
+<span class="fc" id="L61">        searchName = findViewById(R.id.searchName);</span>
+<span class="fc" id="L62">        layout = findViewById(R.id.container);</span>
+<span class="fc" id="L63">        baselineText = findViewById(R.id.baselineText);</span>
+<span class="fc" id="L64">        groupname = findViewById(R.id.groupNameETxt);</span>
+<span class="fc" id="L65">        blackListsSV = findViewById(R.id.blacklistScrollView);</span>
+<span class="fc" id="L66">        blacklistTextview = findViewById(R.id.blacklistTextView);</span>
+<span class="fc" id="L67">        blackListCards = findViewById(R.id.blackListCardsLL);</span>
+
+<span class="fc" id="L69">        NAVLeft = findViewById(R.id.BusinessDeleteNAVBtn);</span>
+<span class="fc" id="L70">        viewBlacklist = findViewById(R.id.viewBlacklistBtn);</span>
+
+<span class="fc" id="L72">        NAVLeft.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L75">                Intent i = new Intent(GroupChatBanPage.this, BusinessDeletePage.class);</span>
+<span class="nc" id="L76">                startActivity(i);</span>
+<span class="nc" id="L77">                finish();</span>
+<span class="nc" id="L78">            }</span>
+        });
+
+
+<span class="fc" id="L82">        search.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view){
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">                if (groupname.getText().toString().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L86">                    Toast.makeText(GroupChatBanPage.this,&quot;Please Enter A Group Name&quot;, Toast.LENGTH_LONG).show();</span>
+                }
+                else {
+<span class="fc" id="L89">                    layout.removeAllViews();</span>
+<span class="fc" id="L90">                   String serverUrl = URL + &quot;/@/&quot; + userName + &quot;/search/&quot; + (searchName.getText().toString()) ;</span>
+                    //String serverUrl = &quot;http://coms-309-067.class.las.iastate.edu:8080/groupchats&quot;
+<span class="fc" id="L92">                    JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(serverUrl, new Response.Listener&lt;JSONArray&gt;() {</span>
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            try {
+<span class="fc bfc" id="L96" title="All 2 branches covered.">                                if (response.length() == 0) {</span>
+<span class="fc" id="L97">                                    addCard(&quot;No People&quot;);</span>
+                                } else {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                                    for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L100">                                        JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L101">                                        String name = object.getString(&quot;username&quot;);</span>
+<span class="fc" id="L102">                                        addCard(name);</span>
+                                    }
+                                }
+<span class="nc" id="L105">                            } catch (JSONException e) {</span>
+<span class="nc" id="L106">                                VolleyLog.d(TAG, &quot;Error:&quot; + e.getMessage());</span>
+<span class="fc" id="L107">                            }</span>
+<span class="fc" id="L108">                        }</span>
+<span class="fc" id="L109">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L112">                            VolleyLog.d(TAG, &quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L113">                        }</span>
+                    });
+                    RequestQueue requestQueue;
+<span class="fc" id="L116">                    requestQueue = Volley.newRequestQueue(GroupChatBanPage.this);</span>
+<span class="fc" id="L117">                    requestQueue.add(jsonArrayRequest);</span>
+                }
+<span class="fc" id="L119">            }</span>
+        });
+
+<span class="fc" id="L122">        viewBlacklist.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view){
+
+                //layout is a linear view, make a second one
+
+<span class="fc" id="L128">                blackListCards.removeAllViews();</span>
+<span class="fc" id="L129">                String serverUrl = &quot;http://coms-309-067.class.las.iastate.edu:8080/blacklists/&quot; + groupname.getText().toString() ;</span>
+                //String serverUrl = &quot;http://coms-309-067.class.las.iastate.edu:8080/blacklists/demo4&quot;;
+
+<span class="fc" id="L132">                StringRequest rq = new StringRequest(Request.Method.GET, serverUrl, new Response.Listener&lt;String&gt;() {</span>
+                    @Override
+                    public void onResponse(String response) {
+<span class="fc" id="L135">                        blacklistTextview.setText(&quot;Response: &quot; + response);</span>
+                        try {
+<span class="fc" id="L137">                            JSONArray arr = new JSONArray(response);</span>
+                            //blacklistTextview.setText(arr.get(0).toString());
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">                            if (arr.length() == 0) {</span>
+<span class="nc" id="L140">                                addTextCard(&quot;No People&quot;);</span>
+                            } else {
+<span class="fc bfc" id="L142" title="All 2 branches covered.">                                for (int i = arr.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L143">                                    String name = arr.get(i).toString();</span>
+<span class="fc" id="L144">                                    addTextCard(name);</span>
+                                }
+                            }
+                        }
+<span class="nc" id="L148">                        catch (JSONException e) {</span>
+<span class="nc" id="L149">                            blacklistTextview.setText(&quot;Error: &quot; + e.getMessage());</span>
+<span class="fc" id="L150">                        }</span>
+
+<span class="fc" id="L152">                    }</span>
+<span class="fc" id="L153">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L156">                        blacklistTextview.setText(&quot;Error: &quot; + error.getMessage() + &quot;\n&quot; + serverUrl);</span>
+<span class="fc" id="L157">                    }</span>
+                });
+                RequestQueue requestQueue;
+<span class="fc" id="L160">                requestQueue = Volley.newRequestQueue(GroupChatBanPage.this);</span>
+<span class="fc" id="L161">                requestQueue.add(rq);</span>
+<span class="fc" id="L162">            }</span>
+
+        });
+
+<span class="fc" id="L166">    }</span>
+    private void addCard(String name){
+<span class="fc" id="L168">        View view = getLayoutInflater().inflate(R.layout.simple_box_2btn, null);</span>
+<span class="fc" id="L169">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L170">        Button banBtn = view.findViewById(R.id.btn1);</span>
+<span class="fc" id="L171">        banBtn.setBackgroundColor(Color.RED);</span>
+<span class="fc" id="L172">        banBtn.setText(&quot;Blacklist&quot;);</span>
+
+<span class="fc" id="L174">        Button unbanBtn = view.findViewById(R.id.btn2);</span>
+<span class="fc" id="L175">        unbanBtn.setBackgroundColor(Color.GRAY);</span>
+<span class="fc" id="L176">        unbanBtn.setText(&quot;UNBAN&quot;);</span>
+
+<span class="fc" id="L178">        nameView.setText(name);</span>
+
+<span class="fc" id="L180">        banBtn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">                    if (groupname.getText().toString().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L185">                        Toast.makeText(GroupChatBanPage.this,&quot;Error Blacklisting &lt;No Group&gt;&quot;,Toast.LENGTH_LONG).show();</span>
+                    }
+                    else {
+                        //String deleteUserURL = URL +&quot;/@/&quot;+ name + &quot;/ban&quot;;
+<span class="fc" id="L189">                        String blacklistUserURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/blacklists/&quot; + groupname.getText().toString() + &quot;/&quot; + name;</span>
+                        //Toast.makeText(GroupChatBanPage.this, blacklistUserURL, Toast.LENGTH_LONG).show();
+<span class="fc" id="L191">                        StringRequest stringRequest = new StringRequest(Request.Method.POST, blacklistUserURL, new Response.Listener&lt;String&gt;() {</span>
+                            @Override
+                            public void onResponse(String response) {
+<span class="fc" id="L194">                                Toast.makeText(GroupChatBanPage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(response.toString());
+<span class="fc" id="L196">                            }</span>
+<span class="fc" id="L197">                        }, new Response.ErrorListener() {</span>
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L200">                                Toast.makeText(GroupChatBanPage.this, &quot;Error: &quot;+ error.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(error.toString());
+<span class="nc" id="L202">                            }</span>
+                        }
+                        );
+
+                        RequestQueue requestQueue;
+<span class="fc" id="L207">                        requestQueue = Volley.newRequestQueue(GroupChatBanPage.this);</span>
+<span class="fc" id="L208">                        requestQueue.add(stringRequest);</span>
+                    }
+<span class="nc" id="L210">                }catch (Exception e){</span>
+<span class="nc" id="L211">                    e.printStackTrace();</span>
+<span class="fc" id="L212">                }</span>
+<span class="fc" id="L213">            }</span>
+        });
+
+<span class="fc" id="L216">        unbanBtn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">                    if (groupname.getText().toString().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L221">                        Toast.makeText(GroupChatBanPage.this,&quot;Error Blacklisting &lt;No Group&gt;&quot;,Toast.LENGTH_LONG).show();</span>
+                    }
+                    else {
+                        //String deleteUserURL = URL +&quot;/@/&quot;+ name + &quot;/ban&quot;;
+<span class="fc" id="L225">                        String blacklistUserURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/blacklists/&quot; + groupname.getText().toString() + &quot;/&quot; + name;</span>
+                        //Toast.makeText(GroupChatBanPage.this, blacklistUserURL, Toast.LENGTH_LONG).show();
+<span class="fc" id="L227">                        StringRequest stringRequest = new StringRequest(Request.Method.DELETE, blacklistUserURL, new Response.Listener&lt;String&gt;() {</span>
+                            @Override
+                            public void onResponse(String response) {
+<span class="fc" id="L230">                                Toast.makeText(GroupChatBanPage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(response.toString());
+<span class="fc" id="L232">                            }</span>
+<span class="fc" id="L233">                        }, new Response.ErrorListener() {</span>
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L236">                                Toast.makeText(GroupChatBanPage.this, &quot;Error: &quot;+ error.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(error.toString());
+<span class="nc" id="L238">                            }</span>
+                        }
+                        );
+
+                        RequestQueue requestQueue;
+<span class="fc" id="L243">                        requestQueue = Volley.newRequestQueue(GroupChatBanPage.this);</span>
+<span class="fc" id="L244">                        requestQueue.add(stringRequest);</span>
+                    }
+<span class="nc" id="L246">                }catch (Exception e){</span>
+<span class="nc" id="L247">                    e.printStackTrace();</span>
+<span class="fc" id="L248">                }</span>
+<span class="fc" id="L249">            }</span>
+        });
+
+<span class="fc" id="L252">        layout.addView(view);</span>
+<span class="fc" id="L253">    }</span>
+    private void addTextCard(String name){
+<span class="fc" id="L255">        View view = getLayoutInflater().inflate(R.layout.simple_text_box, null);</span>
+<span class="fc" id="L256">        TextView nameView = view.findViewById(R.id.textView);</span>
+
+<span class="fc" id="L258">        nameView.setText(name);</span>
+
+<span class="fc" id="L260">        blackListCards.addView(view);</span>
+<span class="fc" id="L261">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

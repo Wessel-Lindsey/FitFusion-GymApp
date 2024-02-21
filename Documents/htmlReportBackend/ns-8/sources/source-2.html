@@ -1,0 +1,272 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PersonController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Person</a>
+</div>
+
+<h1>Coverage Summary for Class: PersonController (com.example.fitfusion.Person)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PersonController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.3%
+  </span>
+  <span class="absValue">
+    (11/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.1%
+  </span>
+  <span class="absValue">
+    (41/62)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Person;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.LinkedList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import com.example.fitfusion.Image.Image;
+&nbsp;import com.example.fitfusion.Image.ImageController;
+&nbsp;import com.example.fitfusion.Image.ImageRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.MediaType;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import com.example.fitfusion.Business.Business;
+&nbsp;import com.example.fitfusion.Business.BusinessRepository;
+&nbsp;import com.example.fitfusion.Workout.Workout;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;public class PersonController {</b>
+&nbsp;
+<b class="fc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+<b class="fc">&nbsp;    private String failure = &quot;{\&quot;message\&quot;:\&quot;failure\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonService personService;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    BusinessRepository businessRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    ImageRepository imageRepository;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people&quot;)
+&nbsp;    List&lt;Person&gt; getAllPeople() {
+<b class="nc">&nbsp;        return personRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/@/{username}&quot;)
+&nbsp;    Person findPerson(@PathVariable String username) {
+<b class="fc">&nbsp;        return personRepository.findByUsername(username);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // all workouts of a user
+&nbsp;    @GetMapping(&quot;/people/@/{username}/workouts&quot;)
+&nbsp;    Set&lt;String&gt; getAllWorkouts(@PathVariable String username) {
+<b class="fc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        List&lt;String&gt; workouts = personService.getWorkoutsOfPerson(person);</b>
+<b class="fc">&nbsp;        Set&lt;String&gt; myWorkouts = new HashSet&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (String workout : workouts) {</b>
+<b class="fc">&nbsp;            myWorkouts.add(workout);</b>
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        return myWorkouts;</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/people/@/{username}/profilePicture&quot;)
+&nbsp;    ResponseEntity&lt;String&gt; uploadProfilePic(@PathVariable String username, @RequestParam(&quot;file&quot;) MultipartFile file) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Image image = new Image();</b>
+<b class="nc">&nbsp;            image.setName(file.getOriginalFilename());</b>
+<b class="nc">&nbsp;            image.setData(file.getBytes());</b>
+<b class="nc">&nbsp;            imageRepository.save(image);</b>
+<b class="nc">&nbsp;            Person tempPerson = personRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;            tempPerson.setProfilePic(image);</b>
+<b class="nc">&nbsp;            personRepository.save(tempPerson);</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.OK).body(&quot;Image uploaded successfully&quot;);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(&quot;Error uploading image&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/@/{username}/profilePicture&quot;)
+&nbsp;    public ResponseEntity&lt;byte[]&gt; getProfilePic(@PathVariable String username) {
+<b class="nc">&nbsp;        Person tempPerson = personRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        Image image = tempPerson.getProfilePic();</b>
+<b class="nc">&nbsp;        if (image != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image.getData());</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/people&quot;)
+&nbsp;    String addPerson(@RequestBody Person person) {
+<b class="fc">&nbsp;        if (person == null) {</b>
+<b class="nc">&nbsp;            return failure;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        personRepository.save(person);</b>
+<b class="fc">&nbsp;        return success;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/@/{username}/friends&quot;)
+&nbsp;    Set&lt;Person&gt; getAllFriends(@PathVariable String username) {
+<b class="nc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        return person.getFriends();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/search/{prefix}&quot;)
+&nbsp;    List&lt;Person&gt; getMatchingPeople(@PathVariable String prefix) {
+<b class="fc">&nbsp;        int queryLength = prefix.length();</b>
+<b class="fc">&nbsp;        return personRepository.GetByMatchingPrefix(prefix, queryLength);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/@/{username}/search/{prefix}&quot;)
+&nbsp;    List&lt;Person&gt; searchForFriends(@PathVariable String username, @PathVariable String prefix) {
+<b class="fc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        int queryLength = prefix.length();</b>
+<b class="fc">&nbsp;        List&lt;Person&gt; candidates = personRepository.GetByMatchingPrefix(prefix, queryLength);</b>
+<b class="fc">&nbsp;        List&lt;Person&gt; newFriends = new LinkedList&lt;Person&gt;();</b>
+<b class="fc">&nbsp;        for (Person candidate : candidates) {</b>
+<b class="fc">&nbsp;            if (!candidate.getFriends().contains(person) &amp;&amp; !candidate.getUsername().equals(username)) {</b>
+<b class="nc">&nbsp;                newFriends.add(candidate);</b>
+&nbsp;            }
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        return newFriends;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/@/{username}/recommend/{strictness}&quot;)
+&nbsp;    List&lt;Person&gt; recommendFriends(@PathVariable String username, @PathVariable int strictness) {
+<b class="fc">&nbsp;        return personService.recommendFriends(username, strictness);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/people/@/{username}/setHome/{gymName}&quot;)
+&nbsp;    String addGymToPerson(@PathVariable String username, @PathVariable String gymName) {
+<b class="fc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        Business business = businessRepository.findByBusinessName(gymName);</b>
+<b class="fc">&nbsp;        if (person == null || business == null) {</b>
+<b class="nc">&nbsp;            return &quot;Home gym cannot be added to &quot; + username;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        person.setMyGym(business);</b>
+<b class="fc">&nbsp;        personRepository.save(person);</b>
+<b class="fc">&nbsp;        return &quot;Home gym successfully added to &quot; + username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/people/@/{username}/isBanned&quot;)
+&nbsp;    boolean getIsBanned(@PathVariable String username) {
+<b class="fc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        return person.isBanned();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/people/@/{username}/ban&quot;)
+&nbsp;    String banPerson(@PathVariable String username) {
+<b class="fc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        person.setBanned(true);</b>
+<b class="fc">&nbsp;        personRepository.save(person);</b>
+<b class="fc">&nbsp;        return &quot;banned &quot; + username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/people/@/{username}/unban&quot;)
+&nbsp;    String unbanPerson(@PathVariable String username) {
+<b class="fc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="fc">&nbsp;        person.setBanned(false);</b>
+<b class="fc">&nbsp;        personRepository.save(person);</b>
+<b class="fc">&nbsp;        return &quot;unbanned &quot; + username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

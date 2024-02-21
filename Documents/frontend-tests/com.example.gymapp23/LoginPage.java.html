@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">LoginPage.java</span></div><h1>LoginPage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Button;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityHomePageBinding;
+import com.example.gymapp23.databinding.ActivityLoginPageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L25">public class LoginPage extends AppCompatActivity {</span>
+
+
+
+    //public static final String URL_STRING_REQ = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/username&quot;;
+    //public static final String URL_STRING_REQ = &quot;http://coms-309-067.class.las.iastate.edu:8080/people&quot;; //kyle endpoint
+    public static final String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/test2&quot;; //kyle endpoint
+<span class="fc" id="L32">    public final String GETPERSONURL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people/@/&quot;; //kyle endpoint</span>
+    //public static final String URL = &quot;https://dbfca566-da98-43bd-8c06-e71b77d0240d.mock.pstmn.io/jsonrequest&quot;; //postman test
+    //returns { &quot;username&quot; : mjinman, &quot;password&quot; : &quot;password!&quot; }
+    public static final String USERNAME = &quot;username&quot;;
+
+    private String username;
+
+    private EditText usernameETX;
+    private EditText passwordETX;
+
+    private ActivityLoginPageBinding binding;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L45">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L46">        binding = ActivityLoginPageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L47">        setContentView(binding.getRoot());</span>
+
+<span class="fc" id="L49">        usernameETX = findViewById(R.id.username);</span>
+<span class="fc" id="L50">        passwordETX = findViewById(R.id.passwrd);</span>
+<span class="fc" id="L51">        TextView forgotPassword = findViewById(R.id.forgotpassword);</span>
+<span class="fc" id="L52">        Button loginBtn = (Button) findViewById(R.id.loginbtn);</span>
+<span class="fc" id="L53">        Button homeBtn = (Button) findViewById(R.id.homebtn);</span>
+<span class="fc" id="L54">        Button goToSignupBtn = (Button) findViewById(R.id.signupbtn);</span>
+<span class="fc" id="L55">        Button goToBusinessLoginBtn = findViewById(R.id.businessLoginBtn);</span>
+<span class="fc" id="L56">        String URL = GETPERSONURL;</span>
+        //admin and admin
+<span class="fc" id="L58">        loginBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L61">                checkAdmin();</span>
+<span class="fc" id="L62">                int clickedBtn = v.getId();</span>
+<span class="fc" id="L63">                forgotPassword.setText( &quot;&quot; + v.toString());</span>
+
+
+
+<span class="fc" id="L67">                        String URL = GETPERSONURL + usernameETX.getText().toString();</span>
+<span class="fc" id="L68">                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest</span>
+<span class="fc" id="L69">                                (Request.Method.GET, URL, null, new Response.Listener&lt;JSONObject&gt;() {</span>
+
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+<span class="fc" id="L73">                                        forgotPassword.setText(&quot;Recieved from backend: &quot; + response.toString());</span>
+
+                                            try {
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">                                                if (usernameETX.getText().toString().equals(response.getString(&quot;username&quot;)) &amp;&amp;</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">                                                        passwordETX.getText().toString().equals(response.getString(&quot;password&quot;))) {</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">                                                    if (response.getBoolean(&quot;banned&quot;)) {</span>
+<span class="nc" id="L79">                                                        forgotPassword.setText(&quot;You are Banned!&quot;);</span>
+                                                    }
+                                                    else {
+<span class="fc" id="L82">                                                        Intent intent = new Intent(LoginPage.this, HomePage.class);</span>
+<span class="fc" id="L83">                                                        intent.putExtra(USERNAME, response.getString(&quot;username&quot;));</span>
+<span class="fc" id="L84">                                                        startActivity(intent);</span>
+<span class="fc" id="L85">                                                        finish();</span>
+<span class="fc" id="L86">                                                    }</span>
+
+                                                }
+                                                else {
+<span class="nc" id="L90">                                                    forgotPassword.setText(&quot;Username or Password incorrect&quot;);</span>
+                                                }
+<span class="nc" id="L92">                                            } catch (JSONException e) {</span>
+<span class="nc" id="L93">                                                throw new RuntimeException(e);</span>
+<span class="fc" id="L94">                                            }</span>
+
+<span class="fc" id="L96">                                    }</span>
+<span class="fc" id="L97">                                }, new Response.ErrorListener() {</span>
+
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+<span class="fc" id="L101">                                        forgotPassword.setText(&quot;Error: &quot; + error.getMessage());</span>
+<span class="fc" id="L102">                                    }</span>
+                                });
+
+
+                        RequestQueue requestQueue;
+<span class="fc" id="L107">                        requestQueue = Volley.newRequestQueue(LoginPage.this);</span>
+<span class="fc" id="L108">                        requestQueue.add(jsonObjectRequest);</span>
+
+<span class="fc" id="L110">            }</span>
+        });
+
+<span class="fc" id="L113">        homeBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L116">                Intent in = new Intent(LoginPage.this, HomePage.class);</span>
+<span class="fc" id="L117">                in.putExtra(&quot;username&quot;, &quot;test&quot;);</span>
+<span class="fc" id="L118">                startActivity(in);</span>
+<span class="fc" id="L119">                finish();</span>
+<span class="fc" id="L120">            }</span>
+        });
+<span class="fc" id="L122">        goToSignupBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L125">                Intent in = new Intent(LoginPage.this, SignupOptions.class);</span>
+<span class="fc" id="L126">                startActivity(in);</span>
+<span class="fc" id="L127">                finish();</span>
+<span class="fc" id="L128">            }</span>
+        });
+<span class="fc" id="L130">        goToBusinessLoginBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="nc" id="L133">                Intent in = new Intent(LoginPage.this, BusinessLogin.class);</span>
+<span class="nc" id="L134">                startActivity(in);</span>
+<span class="nc" id="L135">                finish();</span>
+<span class="nc" id="L136">            }</span>
+        });
+
+
+
+
+<span class="fc" id="L142">    }</span>
+
+    private void checkAdmin() {
+<span class="pc bpc" id="L145" title="1 of 4 branches missed.">        if (usernameETX.getText().toString().equals(&quot;admin&quot;) &amp;&amp; passwordETX.getText().toString().equals(&quot;admin&quot;)) {</span>
+<span class="fc" id="L146">            Intent i = new Intent(LoginPage.this, AdminHomePage.class);</span>
+<span class="fc" id="L147">            i.putExtra(&quot;username&quot;, usernameETX.getText().toString());</span>
+<span class="fc" id="L148">            startActivity(i);</span>
+<span class="fc" id="L149">            finish();</span>
+        }
+<span class="fc" id="L151">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

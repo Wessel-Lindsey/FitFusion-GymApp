@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchPage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">SearchPage.java</span></div><h1>SearchPage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.text.Html;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.gymapp23.databinding.ActivitySearchPageBinding;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+
+<span class="fc" id="L44">public class SearchPage extends AppCompatActivity {</span>
+    AlertDialog dialog;
+    Button search;
+    LinearLayout layout;
+    TextView baselineText;
+    EditText searchName;
+<span class="fc" id="L50">    private String TAG = MainActivity.class.getSimpleName();</span>
+<span class="fc" id="L51">    String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people&quot;;</span>
+    String userName;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L55">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L56">        setContentView(R.layout.activity_search_page);</span>
+
+<span class="fc" id="L58">        Intent intent = getIntent();</span>
+<span class="fc" id="L59">        userName = intent.getStringExtra(&quot;username&quot;);</span>
+
+<span class="fc" id="L61">        search = findViewById(R.id.searchBTN);</span>
+<span class="fc" id="L62">        searchName = findViewById(R.id.searchName);</span>
+<span class="fc" id="L63">        layout = findViewById(R.id.container);</span>
+<span class="fc" id="L64">        baselineText = findViewById(R.id.baselineText);</span>
+<span class="fc" id="L65">        FloatingActionButton home = findViewById(R.id.homePage);</span>
+        RequestQueue requestQueue;
+<span class="fc" id="L67">        requestQueue = Volley.newRequestQueue(SearchPage.this);</span>
+
+<span class="fc" id="L69">        JsonArrayRequest recomendedFriends = new JsonArrayRequest(URL+ &quot;/@/&quot; +userName+ &quot;/recommend/1&quot;, new Response.Listener&lt;JSONArray&gt;() {</span>
+            @Override
+            public void onResponse(JSONArray response) {
+                try {
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">                    if (response.length() == 0) {</span>
+<span class="nc" id="L74">                        addCard(&quot;No People&quot;);</span>
+                    } else {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">                        for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+
+<span class="fc" id="L78">                            JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L79">                            String name = object.getString(&quot;username&quot;);</span>
+<span class="fc" id="L80">                            addCard(name);</span>
+                        }
+                    }
+<span class="nc" id="L83">                } catch (JSONException e) {</span>
+<span class="nc" id="L84">                    VolleyLog.d(TAG, &quot;Error:&quot; + e.getMessage());</span>
+<span class="fc" id="L85">                }</span>
+<span class="fc" id="L86">            }</span>
+<span class="fc" id="L87">        }, new Response.ErrorListener() {</span>
+            @Override
+            public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L90">                VolleyLog.d(TAG, &quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L91">            }</span>
+        });
+<span class="fc" id="L93">        requestQueue.add(recomendedFriends);</span>
+
+
+
+<span class="fc" id="L97">        home.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view) {
+<span class="fc" id="L100">                Intent intent2 = new Intent(SearchPage.this, HomePage.class);</span>
+<span class="fc" id="L101">                intent2.putExtra(&quot;username&quot;, userName);</span>
+<span class="fc" id="L102">                startActivity(intent2);</span>
+<span class="fc" id="L103">                finish();</span>
+<span class="fc" id="L104">            }</span>
+        });
+<span class="fc" id="L106">        search.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view){
+<span class="fc" id="L109">                layout.removeAllViews();</span>
+<span class="fc" id="L110">                String serverUrl = URL + &quot;/@/&quot; + userName + &quot;/search/&quot; + (searchName.getText().toString()) ;</span>
+<span class="fc" id="L111">                JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(serverUrl, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+<span class="fc bfc" id="L115" title="All 2 branches covered.">                            if (response.length() == 0) {</span>
+<span class="fc" id="L116">                                addCard(&quot;No People&quot;);</span>
+                            } else {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                                for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+
+<span class="fc" id="L120">                                    JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L121">                                    String name = object.getString(&quot;username&quot;);</span>
+<span class="fc" id="L122">                                    addCard(name);</span>
+                                }
+                            }
+<span class="nc" id="L125">                        } catch (JSONException e) {</span>
+<span class="nc" id="L126">                            VolleyLog.d(TAG, &quot;Error:&quot; + e.getMessage());</span>
+<span class="fc" id="L127">                        }</span>
+<span class="fc" id="L128">                    }</span>
+<span class="fc" id="L129">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L132">                        VolleyLog.d(TAG, &quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L133">                    }</span>
+                });
+//                RequestQueue requestQueue;
+//                requestQueue = Volley.newRequestQueue(SearchPage.this);
+<span class="fc" id="L137">                requestQueue.add(jsonArrayRequest);</span>
+<span class="fc" id="L138">            }</span>
+
+        });
+<span class="fc" id="L141">    }</span>
+
+    private void addCard(String name){
+<span class="fc" id="L144">        View view = getLayoutInflater().inflate(R.layout.simple_box, null);</span>
+<span class="fc" id="L145">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L146">        Button follow = view.findViewById(R.id.followBTN);</span>
+
+<span class="fc" id="L148">        nameView.setText(name);</span>
+<span class="fc" id="L149">        follow.setText(&quot;View&quot;);</span>
+
+<span class="fc" id="L151">        follow.setOnClickListener(new View.OnClickListener(){</span>
+           @Override
+           public void onClick(View v) {
+               try {
+<span class="fc" id="L155">                   Intent tmpPfp = new Intent(SearchPage.this, FriendsProfile.class);</span>
+<span class="fc" id="L156">                   tmpPfp.putExtra(&quot;username&quot;, userName);</span>
+<span class="fc" id="L157">                   tmpPfp.putExtra(&quot;friend&quot;, name);</span>
+<span class="fc" id="L158">                   String followerURL = URL +&quot;/@/&quot;+ userName + &quot;/friend/&quot; + name;</span>
+<span class="fc" id="L159">                   startActivity(tmpPfp);</span>
+<span class="fc" id="L160">                   finish();</span>
+//                   Toast.makeText(SearchPage.this, name, Toast.LENGTH_LONG).show();
+
+<span class="nc" id="L163">               } catch (Exception e){</span>
+<span class="nc" id="L164">                   e.printStackTrace();</span>
+<span class="fc" id="L165">               }</span>
+
+<span class="fc" id="L167">           }</span>
+        });
+
+<span class="fc" id="L170">        layout.addView(view);</span>
+<span class="fc" id="L171">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

@@ -1,0 +1,281 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Person</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Person</a>
+</div>
+
+<h1>Coverage Summary for Class: Person (com.example.fitfusion.Person)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Person</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (21/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75.9%
+  </span>
+  <span class="absValue">
+    (22/29)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Person$HibernateInstantiator$OGQAdENf</td>
+  </tr>
+  <tr>
+    <td class="name">Person$HibernateProxy$R8BV16ui</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (21/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75.9%
+  </span>
+  <span class="absValue">
+    (22/29)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Person;
+&nbsp;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;import com.example.fitfusion.Image.Image;
+&nbsp;import com.example.fitfusion.Post.PersonPost;
+&nbsp;import com.example.fitfusion.Routine.Routine;
+&nbsp;import com.example.fitfusion.WorkoutSession.WorkoutSession;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;
+&nbsp;import jakarta.persistence.*;
+&nbsp;import com.example.fitfusion.Business.Business;
+&nbsp;
+&nbsp;import jakarta.persistence.Column;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.FetchType;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.JoinColumn;
+&nbsp;import jakarta.persistence.JoinTable;
+&nbsp;import jakarta.persistence.ManyToMany;
+&nbsp;import jakarta.persistence.ManyToOne;
+&nbsp;import jakarta.persistence.OneToMany;
+&nbsp;import jakarta.persistence.OneToOne;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class Person {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private int id;
+&nbsp;
+&nbsp;    private int points;
+&nbsp;
+&nbsp;    @Column(unique = true)
+&nbsp;    private String username;
+&nbsp;    private String password;
+&nbsp;
+&nbsp;    @JsonIgnore
+&nbsp;    @OneToOne
+&nbsp;    private Image profilePic;
+&nbsp;
+&nbsp;    @ManyToOne
+&nbsp;    @JoinColumn(name = &quot;home_gym_id&quot;)
+&nbsp;    private Business myGym;
+&nbsp;
+&nbsp;    @OneToMany
+&nbsp;    private List&lt;Routine&gt; routines;
+&nbsp;
+&nbsp;    @JsonIgnore
+&nbsp;    @OneToMany
+&nbsp;    private List&lt;WorkoutSession&gt; workoutSessions;
+&nbsp;
+<b class="fc">&nbsp;    @JsonIgnore</b>
+&nbsp;    @ManyToMany(fetch = FetchType.LAZY)
+&nbsp;    private Set&lt;Person&gt; friends = new HashSet&lt;&gt;();
+&nbsp;
+&nbsp;    @OneToMany(cascade = CascadeType.ALL)
+&nbsp;    private List&lt;PersonPost&gt; personPosts;
+&nbsp;
+<b class="fc">&nbsp;    @JsonIgnore</b>
+&nbsp;    private boolean isBanned = false;
+&nbsp;
+<b class="nc">&nbsp;    public Person(String username, String password) {</b>
+<b class="nc">&nbsp;        this.username = username;</b>
+<b class="nc">&nbsp;        this.password = password;</b>
+<b class="nc">&nbsp;        points = 0;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Person() {</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public Image getProfilePic() {
+<b class="nc">&nbsp;        return profilePic;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setProfilePic(Image profilePic) {
+<b class="nc">&nbsp;        this.profilePic = profilePic;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Routine&gt; getRoutines() {
+<b class="fc">&nbsp;        return routines;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addRoutine(Routine routine) {
+<b class="fc">&nbsp;        routines.add(routine);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getUsername() {
+<b class="fc">&nbsp;        return username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setUsername(String username) {
+<b class="fc">&nbsp;        this.username = username;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getPassword() {
+<b class="fc">&nbsp;        return password;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPassword(String password) {
+<b class="fc">&nbsp;        this.password = password;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getPoints() {
+<b class="fc">&nbsp;        return points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPoints(int points) {
+<b class="fc">&nbsp;        this.points = points;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addFriend(Person person) {
+<b class="fc">&nbsp;        this.friends.add(person);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Set&lt;Person&gt; getFriends() {
+<b class="fc">&nbsp;        return this.friends;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;PersonPost&gt; getPersonPosts() {
+<b class="fc">&nbsp;        return personPosts;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setPersonPosts(List&lt;PersonPost&gt; personPosts) {
+<b class="nc">&nbsp;        this.personPosts = personPosts;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addPersonPost(PersonPost personPost) {
+<b class="fc">&nbsp;        personPosts.add(personPost);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Business getMyGym() {
+<b class="fc">&nbsp;        return this.myGym;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMyGym(Business newGym) {
+<b class="fc">&nbsp;        this.myGym = newGym;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;WorkoutSession&gt; getWorkoutSessions() {
+<b class="fc">&nbsp;        return this.workoutSessions;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addWorkoutSession(WorkoutSession workoutSession) {
+<b class="fc">&nbsp;        workoutSessions.add(workoutSession);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isBanned() {
+<b class="fc">&nbsp;        return isBanned;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBanned(boolean isBanned) {
+<b class="fc">&nbsp;        this.isBanned = isBanned;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

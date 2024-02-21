@@ -1,0 +1,379 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChatServerGroup</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Websockets</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatServerGroup (com.example.fitfusion.Websockets)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatServerGroup</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (2/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.6%
+  </span>
+  <span class="absValue">
+    (4/87)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Websockets;
+&nbsp;
+&nbsp;import com.example.fitfusion.Chat.ConversationGroup;
+&nbsp;import com.example.fitfusion.Chat.ConversationGroupRepository;
+&nbsp;import com.example.fitfusion.Chat.Groupchat;
+&nbsp;import com.example.fitfusion.Chat.GroupchatRepository;
+&nbsp;import com.example.fitfusion.Messages.Message;
+&nbsp;import com.example.fitfusion.Messages.MessageRepository;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;import jakarta.websocket.*;
+&nbsp;import jakarta.websocket.server.PathParam;
+&nbsp;import jakarta.websocket.server.ServerEndpoint;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Hashtable;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@ServerEndpoint(value = &quot;/chat/{username}/groupchat/{groupname}&quot;, configurator = CustomSpringConfigurator.class)
+<b class="fc">&nbsp;public class ChatServerGroup {</b>
+&nbsp;
+&nbsp;    // Store all socket session and their corresponding username.
+<b class="fc">&nbsp;    private static Map&lt;Session, String&gt; sessionUsernameMap = new Hashtable&lt;&gt;();</b>
+<b class="fc">&nbsp;    private static Map&lt;String, Session&gt; usernameSessionMap = new Hashtable&lt;&gt;();</b>
+&nbsp;
+&nbsp;    // This is where the different groupchats are stored. Given a group name it will
+&nbsp;    // give you a list of all the usernames(keys)
+&nbsp;    // of users
+<b class="fc">&nbsp;    private static Map&lt;String, List&lt;String&gt;&gt; onlineGroupchats = new Hashtable&lt;&gt;();</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    MessageRepository messageRepository;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;    @Autowired
+&nbsp;    ConversationGroupRepository conversationGroupRepo;
+&nbsp;    @Autowired
+&nbsp;    GroupchatRepository groupchatRepository;
+&nbsp;
+&nbsp;    private ConversationGroup conversationGroup;
+&nbsp;
+&nbsp;    @OnOpen
+&nbsp;    public void onOpen(Session session, @PathParam(&quot;username&quot;) String username,
+&nbsp;            @PathParam(&quot;groupname&quot;) String groupname)
+&nbsp;            throws IOException {
+&nbsp;
+&nbsp;        // Handle the case of a duplicate username
+<b class="nc">&nbsp;        if (usernameSessionMap.containsKey(username)) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;Username already exists&quot;);</b>
+<b class="nc">&nbsp;            session.close();</b>
+<b class="nc">&nbsp;        } else if (personRepository.findByUsername(username) == null) {</b>
+<b class="nc">&nbsp;            session.getBasicRemote().sendText(&quot;User not registered&quot;);</b>
+<b class="nc">&nbsp;            session.close();</b>
+&nbsp;        } else {
+&nbsp;
+&nbsp;            // check if group exists already
+<b class="nc">&nbsp;            if (groupchatRepository.findByGroupname(groupname) != null) {</b>
+&nbsp;
+<b class="nc">&nbsp;                Groupchat groupchat = groupchatRepository.findByGroupname(groupname);</b>
+<b class="nc">&nbsp;                Set&lt;String&gt; blacklist = groupchat.getBlacklist();</b>
+&nbsp;
+&nbsp;                // ...if yes, check if user is blacklisted
+<b class="nc">&nbsp;                if (blacklist.contains(username)) {</b>
+<b class="nc">&nbsp;                    session.getBasicRemote().sendText(&quot;This user is blacklisted&quot;);</b>
+<b class="nc">&nbsp;                    session.close();</b>
+&nbsp;                    return;
+&nbsp;                }
+&nbsp;            }
+&nbsp;
+&nbsp;            // map current session with username
+<b class="nc">&nbsp;            sessionUsernameMap.put(session, username);</b>
+&nbsp;            // map current username with session
+<b class="nc">&nbsp;            usernameSessionMap.put(username, session);</b>
+&nbsp;
+<b class="nc">&nbsp;            List&lt;String&gt; onlineGroupmembers = onlineGroupchats.get(groupname);</b>
+&nbsp;
+&nbsp;            // checking to see if list of group needs to be initalized
+<b class="nc">&nbsp;            if (onlineGroupmembers == null) {</b>
+<b class="nc">&nbsp;                onlineGroupchats.put(groupname, new ArrayList&lt;String&gt;());</b>
+<b class="nc">&nbsp;                onlineGroupmembers = onlineGroupchats.get(groupname);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Put user in respective group
+<b class="nc">&nbsp;            onlineGroupmembers.add(username);</b>
+&nbsp;
+&nbsp;            // ----Below is for getting message history----
+<b class="nc">&nbsp;            conversationGroup = conversationGroupRepo.findConversationByGroupname(groupname);</b>
+<b class="nc">&nbsp;            Person user = personRepository.findByUsername(username);</b>
+&nbsp;
+&nbsp;            // If there is not a conversation already create one
+<b class="nc">&nbsp;            if (conversationGroup == null) {</b>
+&nbsp;
+<b class="nc">&nbsp;                Groupchat tempGroupchat = new Groupchat(groupname);</b>
+<b class="nc">&nbsp;                tempGroupchat.addGroupMember(username);</b>
+<b class="nc">&nbsp;                conversationGroup = new ConversationGroup();</b>
+<b class="nc">&nbsp;                tempGroupchat.setConversationGroup(conversationGroup);</b>
+<b class="nc">&nbsp;                conversationGroup.setGroupchat(tempGroupchat);</b>
+&nbsp;
+<b class="nc">&nbsp;                Message message = new Message(&quot;FitFusion&quot;, &quot;Start of new conversation created by, &quot; + username);</b>
+<b class="nc">&nbsp;                sendMessageToGroup(groupname, message.getContent());</b>
+&nbsp;                //messageRepository.save(message);
+<b class="nc">&nbsp;                conversationGroup.addMessage(message);</b>
+&nbsp;
+<b class="nc">&nbsp;                conversationGroupRepo.save(conversationGroup);</b>
+&nbsp;                // groupchatRepository.save(tempGroupchat);
+&nbsp;
+<b class="nc">&nbsp;            }</b>
+&nbsp;            // else chat already started
+&nbsp;            else {
+<b class="nc">&nbsp;                List&lt;Message&gt; groupMessages = conversationGroup.getMessages();</b>
+<b class="nc">&nbsp;                sendMessageToParticularUser(username, getMessageHistory(groupMessages));</b>
+&nbsp;
+<b class="nc">&nbsp;                Groupchat currentGroupchat = conversationGroup.getGroupchat();</b>
+<b class="nc">&nbsp;                Set&lt;String&gt; groupMembers = currentGroupchat.getGroupMembers();</b>
+&nbsp;
+<b class="nc">&nbsp;                 if(!groupMembers.contains(username))</b>
+&nbsp;                 {
+<b class="nc">&nbsp;                    Message message = new Message(&quot;FitFusion&quot;, username + &quot; has joined the group, say hi!&quot;);</b>
+<b class="nc">&nbsp;                    currentGroupchat.addGroupMember(username);</b>
+<b class="nc">&nbsp;                    sendMessageToGroup(groupname, message.getContent());</b>
+<b class="nc">&nbsp;                    messageRepository.save(message);</b>
+<b class="nc">&nbsp;                    conversationGroup.addMessage(message);</b>
+<b class="nc">&nbsp;                    conversationGroupRepo.save(conversationGroup);</b>
+&nbsp;                 }
+&nbsp;
+&nbsp;            }
+&nbsp;
+&nbsp;            // send to the user joining in
+&nbsp;            //sendMessageToParticularUser(username, &quot;Welcome to the chat server, &quot; + username);
+&nbsp;
+&nbsp;//            Message message = new Message(&quot;FitFusion&quot;, &quot;User: &quot; + username + &quot; has Joined the Chat&quot;);
+&nbsp;//            // send to everyone in the chat
+&nbsp;//            sendMessageToGroup(groupname, message.getContent());
+&nbsp;//            messageRepository.save(message);
+&nbsp;//            conversationGroup.addMessage(message);
+&nbsp;//            conversationGroupRepo.save(conversationGroup);
+&nbsp;
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private String getMessageHistory(List&lt;Message&gt; dmMessages) {
+<b class="nc">&nbsp;        StringBuilder sb = new StringBuilder();</b>
+<b class="nc">&nbsp;        if (dmMessages.size() == 0) {</b>
+<b class="nc">&nbsp;            sb.append(&quot;Start of new conversation&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            for (Message message : dmMessages) {</b>
+<b class="nc">&nbsp;                sb.append(message.getUserName() + &quot;: &quot; + message.getContent() + &quot;\n&quot;);</b>
+<b class="nc">&nbsp;            }</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return sb.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @OnMessage
+&nbsp;    public void onMessage(Session session, @PathParam(&quot;groupname&quot;) String groupname, String message)
+&nbsp;            throws IOException {
+&nbsp;
+&nbsp;        // get the username by session
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+&nbsp;        // handle sending commands
+<b class="nc">&nbsp;        Groupchat groupchat = groupchatRepository.findByGroupname(groupname);</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; blacklist = groupchat.getBlacklist(); </b>
+&nbsp;
+<b class="nc">&nbsp;        if (message.equals(&quot;!blacklist&quot;)) {</b>
+<b class="nc">&nbsp;            String newMessage = &quot;The following people are blacklisted- \n&quot;;</b>
+<b class="nc">&nbsp;            for (String name : blacklist) {</b>
+<b class="nc">&nbsp;                newMessage += name + &quot;\n&quot;;</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;            message = newMessage;</b>
+&nbsp;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        sendMessageToGroup(groupname, username + &quot;: &quot; + message);</b>
+&nbsp;
+<b class="nc">&nbsp;        Message sentMessage = new Message(username, message);</b>
+&nbsp;
+<b class="nc">&nbsp;        conversationGroup.addMessage(sentMessage);</b>
+<b class="nc">&nbsp;        messageRepository.save(sentMessage);</b>
+<b class="nc">&nbsp;        conversationGroupRepo.save(conversationGroup);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles the closure of a WebSocket connection.
+&nbsp;     *
+&nbsp;     * @param session The WebSocket session that is being closed.
+&nbsp;     */
+&nbsp;    @OnClose
+&nbsp;    public void onClose(Session session, @PathParam(&quot;groupname&quot;) String groupname) throws IOException {
+&nbsp;
+&nbsp;        // get the username from session-username mapping
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+&nbsp;        // remove user from memory mappings
+<b class="nc">&nbsp;        sessionUsernameMap.remove(session);</b>
+<b class="nc">&nbsp;        usernameSessionMap.remove(username);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;String&gt; group = onlineGroupchats.get(groupname);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (group == null) {</b>
+&nbsp;            // name wrong foo
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        group.remove(username);</b>
+&nbsp;
+&nbsp;        // send the message to chat
+<b class="nc">&nbsp;        sendMessageToGroup(groupname, username + &quot; disconnected&quot;);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Handles WebSocket errors that occur during the connection.
+&nbsp;     *
+&nbsp;     * @param session   The WebSocket session where the error occurred.
+&nbsp;     * @param throwable The Throwable representing the error condition.
+&nbsp;     */
+&nbsp;    @OnError
+&nbsp;    public void onError(Session session, Throwable throwable) {
+&nbsp;
+&nbsp;        // get the username from session-username mapping
+<b class="nc">&nbsp;        String username = sessionUsernameMap.get(session);</b>
+&nbsp;
+&nbsp;        // do error handling here
+&nbsp;        // logger.info(&quot;[onError]&quot; + username + &quot;: &quot; + throwable.getMessage());
+&nbsp;    }
+&nbsp;
+&nbsp;    private void sendMessageToGroup(String groupname, String message) {
+<b class="nc">&nbsp;        List&lt;String&gt; group = onlineGroupchats.get(groupname);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (group == null)</b>
+&nbsp;            return;
+&nbsp;
+&nbsp;        // SendMessageTOParticularUser should hopefully handle if someone isnt online
+<b class="nc">&nbsp;        group.forEach((username) -&gt; {</b>
+<b class="nc">&nbsp;            sendMessageToParticularUser(username, message);</b>
+&nbsp;        });
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Sends a message to a specific user in the chat (DM).
+&nbsp;     *
+&nbsp;     * @param username The username of the recipient.
+&nbsp;     * @param message  The message to be sent.
+&nbsp;     */
+&nbsp;    private void sendMessageToParticularUser(String username, String message) {
+&nbsp;        try {
+<b class="nc">&nbsp;            usernameSessionMap.get(username).getBasicRemote().sendText(message);</b>
+<b class="nc">&nbsp;        } catch (IOException e) {</b>
+&nbsp;            // logger.info(&quot;[DM Exception] &quot; + e.getMessage());
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Broadcasts a message to all users in the chat.
+&nbsp;     *
+&nbsp;     * @param message The message to be broadcasted to all users.
+&nbsp;     */
+&nbsp;    private void broadcast(String message) {
+<b class="nc">&nbsp;        sessionUsernameMap.forEach((session, username) -&gt; {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                session.getBasicRemote().sendText(message);</b>
+<b class="nc">&nbsp;            } catch (IOException e) {</b>
+&nbsp;                // logger.info(&quot;[Broadcast Exception] &quot; + e.getMessage());
+<b class="nc">&nbsp;            }</b>
+&nbsp;        });
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Business</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Business</a>
+</div>
+
+<h1>Coverage Summary for Class: Business (com.example.fitfusion.Business)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Business</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.3%
+  </span>
+  <span class="absValue">
+    (11/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.9%
+  </span>
+  <span class="absValue">
+    (11/19)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Business$HibernateInstantiator$Onf4zbtW</td>
+  </tr>
+  <tr>
+    <td class="name">Business$HibernateProxy$hVWOwHhg</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    73.3%
+  </span>
+  <span class="absValue">
+    (11/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.9%
+  </span>
+  <span class="absValue">
+    (11/19)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Business;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import com.example.fitfusion.Post.BusinessPost;
+&nbsp;import com.fasterxml.jackson.annotation.JsonIgnore;
+&nbsp;
+&nbsp;import jakarta.persistence.CascadeType;
+&nbsp;import jakarta.persistence.Column;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.FetchType;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.OneToMany;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;
+&nbsp;@Entity
+&nbsp;@Transactional
+&nbsp;public class Business {
+&nbsp;
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    @Id
+&nbsp;    private int id;
+&nbsp;
+&nbsp;    // this should be unique, so we can use it as a key
+&nbsp;
+&nbsp;    @Column(unique = true)
+&nbsp;    private String businessName;
+&nbsp;
+&nbsp;    private String address;
+&nbsp;    private int zipcode;
+&nbsp;    private String city;
+&nbsp;    @JsonIgnore
+&nbsp;    private boolean isBanned;
+&nbsp;
+&nbsp;    @OneToMany(mappedBy = &quot;business&quot;, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+&nbsp;    private List&lt;BusinessPost&gt; businessPosts;
+&nbsp;
+<b class="nc">&nbsp;    public Business(String businessName, String address, int zipcode, String city) {</b>
+<b class="nc">&nbsp;        this.businessName = businessName;</b>
+<b class="nc">&nbsp;        this.address = address;</b>
+<b class="nc">&nbsp;        this.zipcode = zipcode;</b>
+<b class="nc">&nbsp;        this.city = city;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public Business() {</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getBusinessName() {
+<b class="fc">&nbsp;        return this.businessName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBusinessName(String businessName) {
+<b class="fc">&nbsp;        this.businessName = businessName;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getId() {
+<b class="fc">&nbsp;        return this.id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getAddress() {
+<b class="fc">&nbsp;        return this.address;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setAddress(String address) {
+<b class="nc">&nbsp;        this.address = address;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getZipcode() {
+<b class="fc">&nbsp;        return this.zipcode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setZipcode(int zipcode) {
+<b class="nc">&nbsp;        this.zipcode = zipcode;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getCity() {
+<b class="fc">&nbsp;        return this.city;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setCity(String city) {
+<b class="fc">&nbsp;        this.city = city;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;BusinessPost&gt; getPosts() {
+<b class="fc">&nbsp;        return businessPosts;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addPost(BusinessPost businessPost) {
+<b class="nc">&nbsp;        this.businessPosts.add(businessPost);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public boolean isBanned() {
+<b class="fc">&nbsp;        return isBanned;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setBanned(boolean isBanned) {
+<b class="fc">&nbsp;        this.isBanned = isBanned;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

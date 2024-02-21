@@ -1,0 +1,182 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ConversationGroup</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Chat</a>
+</div>
+
+<h1>Coverage Summary for Class: ConversationGroup (com.example.fitfusion.Chat)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConversationGroup</td>
+<td class="coverageStat">
+  <span class="percent">
+    11.1%
+  </span>
+  <span class="absValue">
+    (1/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    18.2%
+  </span>
+  <span class="absValue">
+    (2/11)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ConversationGroup$HibernateInstantiator$uNeVCWeh</td>
+  </tr>
+  <tr>
+    <td class="name">ConversationGroup$HibernateProxy$mX3NArkW</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    11.1%
+  </span>
+  <span class="absValue">
+    (1/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    18.2%
+  </span>
+  <span class="absValue">
+    (2/11)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Chat;
+&nbsp;
+&nbsp;import com.example.fitfusion.Messages.Message;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import jakarta.persistence.*;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class ConversationGroup {
+&nbsp;
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    @Id
+&nbsp;    private int id;
+&nbsp;
+&nbsp;    //A groupchat should have only one group history
+&nbsp;    @OneToOne(cascade = CascadeType.ALL)
+&nbsp;    @JoinColumn(name = &quot;groupchat_id&quot;)
+&nbsp;    private Groupchat groupchat;
+&nbsp;
+&nbsp;    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+&nbsp;    private List&lt;Message&gt; messages;
+&nbsp;
+<b class="nc">&nbsp;    public ConversationGroup(Groupchat groupchat) {</b>
+&nbsp;        //this.groupchat = groupchat;
+<b class="nc">&nbsp;        messages = new ArrayList&lt;Message&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public ConversationGroup()
+<b class="fc">&nbsp;    {</b>
+<b class="fc">&nbsp;        messages = new ArrayList&lt;Message&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getId() {
+<b class="nc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(int id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Groupchat getGroupchat() {
+<b class="nc">&nbsp;        return groupchat;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setGroupchat(Groupchat groupchat) {
+<b class="nc">&nbsp;        this.groupchat = groupchat;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Message&gt; getMessages() {
+<b class="nc">&nbsp;        return messages;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMessages(List&lt;Message&gt; messages) {
+<b class="nc">&nbsp;        this.messages = messages;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addMessage(Message message)
+&nbsp;    {
+<b class="nc">&nbsp;        messages.add(message);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

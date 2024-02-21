@@ -1,0 +1,161 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ChallengeService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.Challenge</a>
+</div>
+
+<h1>Coverage Summary for Class: ChallengeService (com.example.fitfusion.Challenge)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChallengeService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ChallengeService$$SpringCGLIB$$0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.Challenge;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;
+&nbsp;import jakarta.transaction.Transactional;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class ChallengeService {</b>
+&nbsp;    @Autowired
+&nbsp;    private ChallengeRepository challengeRepository;
+&nbsp;
+&nbsp;    public Challenge createChallenge(Person challenger, Person challengee) {
+&nbsp;        //TODO handle if challenger and challengee are not friends (?) 
+<b class="fc">&nbsp;        long timestamp = System.currentTimeMillis();</b>
+<b class="fc">&nbsp;        Challenge challenge = new Challenge(challenger, challengee);</b>
+<b class="fc">&nbsp;        return challengeRepository.save(challenge);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void declineChallenge(int id) {
+&nbsp;        //TODO notify challenger?
+&nbsp;        //TODO save somewhere? 
+<b class="fc">&nbsp;        challengeRepository.deleteById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Challenge acceptChallenge(int id) { 
+<b class="fc">&nbsp;        Challenge challenge = challengeRepository.findById(id);</b>
+<b class="fc">&nbsp;        long now = System.currentTimeMillis();</b>
+<b class="fc">&nbsp;        challenge.setAcceptedAt(now);</b>
+<b class="fc">&nbsp;        challenge.setStatus(Status.IN_PROGRESS);</b>
+<b class="fc">&nbsp;        challengeRepository.save(challenge);</b>
+<b class="fc">&nbsp;        return challenge;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Transactional
+&nbsp;    public void completeChallenge(int id) {
+<b class="fc">&nbsp;        Challenge challenge = challengeRepository.findById(id);</b>
+<b class="fc">&nbsp;        Person challengee = challenge.getChallengee();</b>
+&nbsp;        //reward challengee for completing challenge 
+<b class="fc">&nbsp;        challengee.setPoints(challengee.getPoints() + 10);</b>
+<b class="fc">&nbsp;        challengeRepository.deleteById(id);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_gray"
+    tools:context=".PostWorkout">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:text="    Workout            PR                     Sets | Reps"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/squats"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Squat"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="20dp"
+                    />
+                <EditText
+                    android:id="@+id/squatsPR"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textAlignment="center"
+                    android:text=""
+                    android:hint="999lbs"
+                    android:textColorHint="@color/transparent_white"
+                    android:textColor="@color/white"
+                    android:background="#30FFFFFF"/>
+
+                <EditText
+                    android:id="@+id/squatsSets"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="55dp"/>
+
+                <EditText
+                    android:id="@+id/squatsReps"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textSize="16dp"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="10dp"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/bench"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Bench"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="20dp"
+                    />
+                <EditText
+                    android:id="@+id/benchPR"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:hint="999lbs"
+                    android:textColorHint="@color/transparent_white"
+                    android:textColor="@color/white"
+                    android:background="#30FFFFFF"/>
+
+                <EditText
+                    android:id="@+id/benchSets"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="55dp"/>
+
+                <EditText
+                    android:id="@+id/benchReps"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="10dp"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/deadlift"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Deadlift"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="20dp"
+                    />
+                <EditText
+                    android:id="@+id/deadliftPR"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:hint="999lbs"
+                    android:textColorHint="@color/transparent_white"
+                    android:textColor="@color/white"
+                    android:background="#30FFFFFF"/>
+
+                <EditText
+                    android:id="@+id/deadliftSets"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="55dp"/>
+
+                <EditText
+                    android:id="@+id/deadliftReps"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="10dp"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/run"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Run"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="20dp"
+                    />
+                <EditText
+                    android:id="@+id/runPR"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:hint="999lbs"
+                    android:textColorHint="@color/transparent_white"
+                    android:textColor="@color/white"
+                    android:background="#30FFFFFF"/>
+
+                <EditText
+                    android:id="@+id/runSets"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:hint="#"
+                    android:layout_marginLeft="55dp"/>
+
+                <EditText
+                    android:id="@+id/runReps"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:hint="#"
+                    android:layout_marginLeft="10dp"/>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/crunch"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="Crunch"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="20dp"
+                    />
+                <EditText
+                    android:id="@+id/crunchPR"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:hint="999lbs"
+                    android:textColorHint="@color/transparent_white"
+                    android:textColor="@color/white"
+                    android:background="#30FFFFFF"/>
+
+                <EditText
+                    android:id="@+id/crunchSets"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:background="#30FFFFFF"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:hint="#"
+                    android:layout_marginLeft="55dp"/>
+
+                <EditText
+                    android:id="@+id/crunchReps"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/light_gray"
+                    android:textColor="@color/white"
+                    android:background="#30FFFFFF"
+                    android:textAlignment="center"
+                    android:hint="#"
+                    android:layout_marginLeft="10dp"/>
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/customName"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/light_gray"
+                android:textColor="@color/white"
+                android:layout_marginRight="100dp"
+                android:layout_marginHorizontal="100dp"
+                android:layout_marginTop="10dp"
+                android:background="#30FFFFFF"
+                android:textAlignment="center"
+                android:hint="My Workout Name"
+                android:layout_marginLeft="10dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/workoutsToHomeBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/teal_200"
+                    android:layout_marginLeft="20dp"
+                    android:text="Home" />
+                <Button
+                    android:id="@+id/trackWorkoutBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/bright_green"
+                    android:layout_marginLeft="20dp"
+                    android:text="Track Workout" />
+
+
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:id="@+id/debugTxt"/>
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>

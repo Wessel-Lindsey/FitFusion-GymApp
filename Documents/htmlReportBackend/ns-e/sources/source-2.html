@@ -1,0 +1,170 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > WorkoutSessionController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.WorkoutSession</a>
+</div>
+
+<h1>Coverage Summary for Class: WorkoutSessionController (com.example.fitfusion.WorkoutSession)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WorkoutSessionController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/7)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.WorkoutSession;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import org.hibernate.boot.registry.classloading.spi.ClassLoaderService.Work;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import com.example.fitfusion.Person.Person;
+&nbsp;import com.example.fitfusion.Person.PersonRepository;
+&nbsp;import com.example.fitfusion.Workout.Workout;
+&nbsp;import com.example.fitfusion.Workout.WorkoutRepository;
+&nbsp;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/wsessions&quot;)
+<b class="fc">&nbsp;public class WorkoutSessionController {</b>
+&nbsp;
+<b class="fc">&nbsp;    private String success = &quot;{\&quot;message\&quot;:\&quot;success\&quot;}&quot;;</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    WorkoutSessionRepository workoutSessionRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    PersonRepository personRepository;
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    WorkoutSessionService workoutSessionService;
+&nbsp;
+&nbsp;    @Autowired 
+&nbsp;    WorkoutRepository workoutRepository;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{username}&quot;)
+&nbsp;    List&lt;WorkoutSession&gt; getWorkoutSessionsOfPerson(@PathVariable String username) {
+<b class="nc">&nbsp;        Person person = personRepository.findByUsername(username);</b>
+<b class="nc">&nbsp;        return person.getWorkoutSessions();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //get `WorkoutSession` of a person on a date, if it exists
+&nbsp;    @GetMapping(&quot;/{username}/{year}/{month}/{day}&quot;)
+&nbsp;    WorkoutSession GetWorkoutSessionOnDate(@PathVariable String username, @PathVariable int year,
+&nbsp;            @PathVariable int month, @PathVariable int day) {
+<b class="nc">&nbsp;                return workoutSessionService.getWorkoutSessionOnDate(username, year, month, day);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;    //instantiate a new `WorkoutSession` for a person 
+&nbsp;    @PostMapping(&quot;/{username}/{year}/{month}/{day}/new&quot;)
+&nbsp;    String addWorkoutSession(@PathVariable String username, @PathVariable int year,
+&nbsp;            @PathVariable int month, @PathVariable int day) {
+<b class="nc">&nbsp;                return workoutSessionService.addWorkoutSessionToPerson(username, year, month, day);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //add a workout to a person&#39;s workout session 
+&nbsp;    @PostMapping(&quot;/{username}/{year}/{month}/{day}&quot;)
+&nbsp;    String addWorkoutToSession(@RequestBody Workout workout, @PathVariable String username, @PathVariable int year,
+&nbsp;            @PathVariable int month, @PathVariable int day) {
+<b class="nc">&nbsp;                return workoutSessionService.addWorkoutToSession(username, year, month, day, workout);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 01:32</div>
+</div>
+</body>
+</html>

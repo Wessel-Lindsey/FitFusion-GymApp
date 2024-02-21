@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BusinessDeletePage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">BusinessDeletePage.java</span></div><h1>BusinessDeletePage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.gymapp23.databinding.ActivityBusinessDeletePageBinding;
+import com.example.gymapp23.databinding.ActivityProfilePageBinding;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L30">public class BusinessDeletePage extends AppCompatActivity {</span>
+
+    private Button NAVLeft, NAVRight, loadBusinessesBtn;
+
+    LinearLayout layout;
+    TextView baselineText;
+    EditText searchName;
+<span class="fc" id="L37">    private String TAG = MainActivity.class.getSimpleName();</span>
+<span class="fc" id="L38">    String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/businesses&quot;;</span>
+    String userName;
+    private ActivityBusinessDeletePageBinding binding;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L43">        super.onCreate(savedInstanceState);binding = ActivityBusinessDeletePageBinding.inflate(getLayoutInflater());</span>
+<span class="fc" id="L44">        setContentView(binding.getRoot());</span>
+
+<span class="fc" id="L46">        NAVLeft = findViewById(R.id.UserBanNAVBtn);</span>
+<span class="fc" id="L47">        NAVRight = findViewById(R.id.groupchatBanNAVBtn);</span>
+
+
+<span class="fc" id="L50">        loadBusinessesBtn = findViewById(R.id.searchBTN);</span>
+<span class="fc" id="L51">        layout = findViewById(R.id.container);</span>
+<span class="fc" id="L52">        baselineText = findViewById(R.id.baselineText);</span>
+
+<span class="fc" id="L54">        loadBusinessesBtn.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view){
+<span class="fc" id="L57">                layout.removeAllViews();</span>
+<span class="fc" id="L58">                String serverUrl = URL;</span>
+<span class="fc" id="L59">                JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(serverUrl, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">                            if (response.length() == 0) {</span>
+<span class="nc" id="L64">                                addCard(&quot;No Businesses&quot;);</span>
+                            } else {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                                for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L67">                                    JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L68">                                    String name = object.getString(&quot;businessName&quot;);</span>
+<span class="fc" id="L69">                                    addCard(name);</span>
+                                }
+                            }
+<span class="nc" id="L72">                        } catch (JSONException e) {</span>
+<span class="nc" id="L73">                            VolleyLog.d(TAG, &quot;Error:&quot; + e.getMessage());</span>
+<span class="fc" id="L74">                        }</span>
+<span class="fc" id="L75">                    }</span>
+<span class="fc" id="L76">                }, new Response.ErrorListener() {</span>
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L79">                        VolleyLog.d(TAG, &quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L80">                    }</span>
+                });
+                RequestQueue requestQueue;
+<span class="fc" id="L83">                requestQueue = Volley.newRequestQueue(BusinessDeletePage.this);</span>
+<span class="fc" id="L84">                requestQueue.add(jsonArrayRequest);</span>
+<span class="fc" id="L85">            }</span>
+
+        });
+
+<span class="fc" id="L89">        NAVRight.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L92">                Intent i = new Intent(BusinessDeletePage.this, GroupChatBanPage.class);</span>
+<span class="fc" id="L93">                startActivity(i);</span>
+<span class="fc" id="L94">                finish();</span>
+<span class="fc" id="L95">            }</span>
+        });
+<span class="fc" id="L97">        NAVLeft.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="nc" id="L100">                Intent i = new Intent(BusinessDeletePage.this, AdminHomePage.class);</span>
+<span class="nc" id="L101">                startActivity(i);</span>
+<span class="nc" id="L102">                finish();</span>
+<span class="nc" id="L103">            }</span>
+        });
+
+<span class="fc" id="L106">    }</span>
+    private void addCard(String name){
+<span class="fc" id="L108">        View view = getLayoutInflater().inflate(R.layout.simple_box_2btn, null);</span>
+<span class="fc" id="L109">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L110">        Button banBtn = view.findViewById(R.id.btn1);</span>
+<span class="fc" id="L111">        banBtn.setBackgroundColor(Color.RED);</span>
+<span class="fc" id="L112">        banBtn.setText(&quot;BAN&quot;);</span>
+
+<span class="fc" id="L114">        Button unbanBtn = view.findViewById(R.id.btn2);</span>
+<span class="fc" id="L115">        unbanBtn.setBackgroundColor(Color.GRAY);</span>
+<span class="fc" id="L116">        unbanBtn.setText(&quot;UNBAN&quot;);</span>
+
+<span class="fc" id="L118">        nameView.setText(name);</span>
+
+<span class="fc" id="L120">        banBtn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="nc" id="L124">                    String deleteUserURL = URL +&quot;/@/&quot;+ name + &quot;/ban&quot;;</span>
+//                   Toast.makeText(adminHomePage.this, name, Toast.LENGTH_LONG).show();
+<span class="nc" id="L126">                    StringRequest stringRequest = new StringRequest(Request.Method.POST, deleteUserURL, new Response.Listener&lt;String&gt;() {</span>
+                        @Override
+                        public void onResponse(String response) {
+<span class="nc" id="L129">                            Toast.makeText(BusinessDeletePage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(response.toString());
+<span class="nc" id="L131">                        }</span>
+<span class="nc" id="L132">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L135">                            Toast.makeText(BusinessDeletePage.this, &quot;Error: &quot;+ error.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(error.toString());
+<span class="nc" id="L137">                        }</span>
+                    }
+                    );
+
+                    RequestQueue requestQueue;
+<span class="nc" id="L142">                    requestQueue = Volley.newRequestQueue(BusinessDeletePage.this);</span>
+<span class="nc" id="L143">                    requestQueue.add(stringRequest);</span>
+<span class="nc" id="L144">                } catch (Exception e){</span>
+<span class="nc" id="L145">                    e.printStackTrace();</span>
+<span class="nc" id="L146">                }</span>
+
+<span class="nc" id="L148">            }</span>
+        });
+
+<span class="fc" id="L151">        unbanBtn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="nc" id="L155">                    String unbanURL = URL +&quot;/@/&quot;+ name + &quot;/unban&quot;;</span>
+//                   Toast.makeText(adminHomePage.this, name, Toast.LENGTH_LONG).show();
+<span class="nc" id="L157">                    StringRequest stringRequest = new StringRequest(Request.Method.POST, unbanURL, new Response.Listener&lt;String&gt;() {</span>
+                        @Override
+                        public void onResponse(String response) {
+<span class="nc" id="L160">                            Toast.makeText(BusinessDeletePage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(response.toString());
+<span class="nc" id="L162">                        }</span>
+<span class="nc" id="L163">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L166">                            Toast.makeText(BusinessDeletePage.this, &quot;Error: &quot;+ error.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(error.toString());
+<span class="nc" id="L168">                        }</span>
+                    }
+                    );
+
+                    RequestQueue requestQueue;
+<span class="nc" id="L173">                    requestQueue = Volley.newRequestQueue(BusinessDeletePage.this);</span>
+<span class="nc" id="L174">                    requestQueue.add(stringRequest);</span>
+<span class="nc" id="L175">                } catch (Exception e){</span>
+<span class="nc" id="L176">                    e.printStackTrace();</span>
+<span class="nc" id="L177">                }</span>
+
+<span class="nc" id="L179">            }</span>
+        });
+
+<span class="fc" id="L182">        layout.addView(view);</span>
+<span class="fc" id="L183">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>

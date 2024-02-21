@@ -1,0 +1,202 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > WorkoutSession</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.fitfusion.WorkoutSession</a>
+</div>
+
+<h1>Coverage Summary for Class: WorkoutSession (com.example.fitfusion.WorkoutSession)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WorkoutSession</td>
+<td class="coverageStat">
+  <span class="percent">
+    69.2%
+  </span>
+  <span class="absValue">
+    (9/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78.9%
+  </span>
+  <span class="absValue">
+    (15/19)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WorkoutSession$HibernateInstantiator$YLesYYN1</td>
+  </tr>
+  <tr>
+    <td class="name">WorkoutSession$HibernateProxy$jeHmvTnk</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    69.2%
+  </span>
+  <span class="absValue">
+    (9/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78.9%
+  </span>
+  <span class="absValue">
+    (15/19)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.fitfusion.WorkoutSession;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import com.example.fitfusion.Workout.Workout;
+&nbsp;
+&nbsp;import jakarta.persistence.Entity;
+&nbsp;import jakarta.persistence.GeneratedValue;
+&nbsp;import jakarta.persistence.GenerationType;
+&nbsp;import jakarta.persistence.Id;
+&nbsp;import jakarta.persistence.OneToMany;
+&nbsp;
+&nbsp;@Entity
+&nbsp;public class WorkoutSession {
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
+&nbsp;    private long id;
+&nbsp;
+&nbsp;    private int year;
+&nbsp;    private int month;
+&nbsp;    private int day;
+&nbsp;
+&nbsp;    @OneToMany
+&nbsp;    private List&lt;Workout&gt; workouts;
+&nbsp;
+<b class="fc">&nbsp;    public WorkoutSession(int year, int month, int day) {</b>
+<b class="fc">&nbsp;        this.year = year;</b>
+<b class="fc">&nbsp;        this.month = month;</b>
+<b class="fc">&nbsp;        this.day = day;</b>
+&nbsp;    }
+&nbsp;
+<b class="fc">&nbsp;    public WorkoutSession() {</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    public int getYear() {
+<b class="fc">&nbsp;        return year;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setYear(int year) {
+<b class="nc">&nbsp;        this.year = year;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getMonth() {
+<b class="fc">&nbsp;        return month;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setMonth(int month) {
+<b class="nc">&nbsp;        this.month = month;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public int getDay() {
+<b class="fc">&nbsp;        return day;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setDay(int day) {
+<b class="nc">&nbsp;        this.day = day;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public List&lt;Workout&gt; getWorkouts() {
+<b class="fc">&nbsp;        return workouts;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void addWorkout(Workout workout) {
+<b class="fc">&nbsp;        workouts.add(workout);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public long getId() {
+<b class="fc">&nbsp;        return id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public void setId(long id) {
+<b class="nc">&nbsp;        this.id = id;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean equals(Object o) {
+<b class="fc">&nbsp;        if (this == o) return true;</b>
+<b class="fc">&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+&nbsp;
+<b class="fc">&nbsp;        WorkoutSession that = (WorkoutSession) o;</b>
+<b class="fc">&nbsp;        return (this.day == that.day &amp;&amp; this.month == that.month &amp;&amp; this.year == that.year);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-12-03 16:41</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminHomePage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=0;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">debug</a> &gt; <a href="index.source.html" class="el_package">com.example.gymapp23</a> &gt; <span class="el_source">AdminHomePage.java</span></div><h1>AdminHomePage.java</h1><pre class="source lang-java linenums">package com.example.gymapp23;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+<span class="fc" id="L29">public class AdminHomePage extends AppCompatActivity {</span>
+
+    AlertDialog dialog;
+    Button search, NAVRight;
+    LinearLayout layout;
+    TextView baselineText;
+    EditText searchName;
+<span class="fc" id="L36">    private String TAG = MainActivity.class.getSimpleName();</span>
+<span class="fc" id="L37">    String URL = &quot;http://coms-309-067.class.las.iastate.edu:8080/people&quot;;</span>
+    String userName;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+<span class="fc" id="L42">        super.onCreate(savedInstanceState);</span>
+<span class="fc" id="L43">        setContentView(R.layout.activity_admin_home_page);</span>
+
+<span class="fc" id="L45">        Intent intent = getIntent();</span>
+<span class="fc" id="L46">        userName = intent.getStringExtra(&quot;username&quot;);</span>
+
+<span class="fc" id="L48">        search = findViewById(R.id.searchBTN);</span>
+<span class="fc" id="L49">        searchName = findViewById(R.id.searchName);</span>
+<span class="fc" id="L50">        layout = findViewById(R.id.container);</span>
+<span class="fc" id="L51">        baselineText = findViewById(R.id.baselineText);</span>
+<span class="fc" id="L52">        NAVRight = findViewById(R.id.businessDeleteNAVBtn);</span>
+
+<span class="fc" id="L54">        search.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View view){
+<span class="fc" id="L57">                layout.removeAllViews();</span>
+<span class="fc" id="L58">                String serverUrl = URL + &quot;/@/&quot; + userName + &quot;/search/&quot; + (searchName.getText().toString()) ;</span>
+<span class="fc" id="L59">                JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(serverUrl, new Response.Listener&lt;JSONArray&gt;() {</span>
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                            if (response.length() == 0) {</span>
+<span class="fc" id="L64">                                addCard(&quot;No People&quot;);</span>
+                            } else {
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                                for (int i = response.length() - 1; i &gt;= 0; i--) {</span>
+<span class="fc" id="L67">                                        JSONObject object = response.getJSONObject(i);</span>
+<span class="fc" id="L68">                                        String name = object.getString(&quot;username&quot;);</span>
+<span class="fc" id="L69">                                        addCard(name);</span>
+                                    }
+                                }
+<span class="nc" id="L72">                            } catch (JSONException e) {</span>
+<span class="nc" id="L73">                                VolleyLog.d(TAG, &quot;Error:&quot; + e.getMessage());</span>
+<span class="fc" id="L74">                            }</span>
+<span class="fc" id="L75">                        }</span>
+<span class="fc" id="L76">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L79">                            VolleyLog.d(TAG, &quot;Error:&quot; + error.getMessage());</span>
+<span class="nc" id="L80">                        }</span>
+                    });
+                    RequestQueue requestQueue;
+<span class="fc" id="L83">                    requestQueue = Volley.newRequestQueue(AdminHomePage.this);</span>
+<span class="fc" id="L84">                    requestQueue.add(jsonArrayRequest);</span>
+<span class="fc" id="L85">                }</span>
+
+            });
+
+<span class="fc" id="L89">        NAVRight.setOnClickListener(new View.OnClickListener() {</span>
+            @Override
+            public void onClick(View v) {
+<span class="fc" id="L92">                Intent i = new Intent(AdminHomePage.this, BusinessDeletePage.class);</span>
+<span class="fc" id="L93">                startActivity(i);</span>
+<span class="fc" id="L94">                finish();</span>
+<span class="fc" id="L95">            }</span>
+        });
+//    private void buildDialog(String user){
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+////        View view = getLayoutInflater().inflate(R.layout.dialog, null);
+//
+////        EditText name = view.findViewById(R.id.nameEdit);
+////        builder.setView(view);
+////        builder.setTitle(&quot;Enter name&quot;);
+//        addCard(user);
+////                .setPositiveButton(&quot;OK&quot;, new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialogInterface, int i) {
+////                        addCard(user);//name.getText().toString());
+////                    }
+////                })
+////                .setNegativeButton(&quot;Cancel&quot;, new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialogInterface, int i) {
+////
+////                    }
+////                });
+//        dialog = builder.create();
+//    }
+
+<span class="fc" id="L120">    }</span>
+    private void addCard(String name){
+<span class="fc" id="L122">        View view = getLayoutInflater().inflate(R.layout.simple_box_2btn, null);</span>
+<span class="fc" id="L123">        TextView nameView = view.findViewById(R.id.textView);</span>
+<span class="fc" id="L124">        Button banBtn = view.findViewById(R.id.btn1);</span>
+<span class="fc" id="L125">        banBtn.setBackgroundColor(Color.RED);</span>
+<span class="fc" id="L126">        banBtn.setText(&quot;BAN&quot;);</span>
+
+<span class="fc" id="L128">        Button unbanBtn = view.findViewById(R.id.btn2);</span>
+<span class="fc" id="L129">        unbanBtn.setBackgroundColor(Color.GRAY);</span>
+<span class="fc" id="L130">        unbanBtn.setText(&quot;UNBAN&quot;);</span>
+
+<span class="fc" id="L132">        nameView.setText(name);</span>
+
+<span class="fc" id="L134">        banBtn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="fc" id="L138">                    String deleteUserURL = URL +&quot;/@/&quot;+ name + &quot;/ban&quot;;</span>
+//                   Toast.makeText(adminHomePage.this, name, Toast.LENGTH_LONG).show();
+<span class="fc" id="L140">                    StringRequest stringRequest = new StringRequest(Request.Method.POST, deleteUserURL, new Response.Listener&lt;String&gt;() {</span>
+                        @Override
+                        public void onResponse(String response) {
+<span class="fc" id="L143">                            Toast.makeText(AdminHomePage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(response.toString());
+<span class="fc" id="L145">                        }</span>
+<span class="fc" id="L146">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L149">                            Toast.makeText(AdminHomePage.this, &quot;Error: &quot;+ error.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(error.toString());
+<span class="nc" id="L151">                        }</span>
+                    }
+                    );
+
+                    RequestQueue requestQueue;
+<span class="fc" id="L156">                    requestQueue = Volley.newRequestQueue(AdminHomePage.this);</span>
+<span class="fc" id="L157">                    requestQueue.add(stringRequest);</span>
+<span class="nc" id="L158">                } catch (Exception e){</span>
+<span class="nc" id="L159">                    e.printStackTrace();</span>
+<span class="fc" id="L160">                }</span>
+
+<span class="fc" id="L162">            }</span>
+        });
+
+<span class="fc" id="L165">        unbanBtn.setOnClickListener(new View.OnClickListener(){</span>
+            @Override
+            public void onClick(View v) {
+                try {
+<span class="fc" id="L169">                    String unbanURL = URL +&quot;/@/&quot;+ name + &quot;/unban&quot;;</span>
+//                   Toast.makeText(adminHomePage.this, name, Toast.LENGTH_LONG).show();
+<span class="fc" id="L171">                    StringRequest stringRequest = new StringRequest(Request.Method.POST, unbanURL, new Response.Listener&lt;String&gt;() {</span>
+                        @Override
+                        public void onResponse(String response) {
+<span class="fc" id="L174">                            Toast.makeText(AdminHomePage.this, response.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(response.toString());
+<span class="fc" id="L176">                        }</span>
+<span class="fc" id="L177">                    }, new Response.ErrorListener() {</span>
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+<span class="nc" id="L180">                            Toast.makeText(AdminHomePage.this, &quot;Error: &quot;+ error.toString(), Toast.LENGTH_LONG).show();</span>
+//                           nameView.setText(error.toString());
+<span class="nc" id="L182">                        }</span>
+                    }
+                    );
+
+                    RequestQueue requestQueue;
+<span class="fc" id="L187">                    requestQueue = Volley.newRequestQueue(AdminHomePage.this);</span>
+<span class="fc" id="L188">                    requestQueue.add(stringRequest);</span>
+<span class="nc" id="L189">                } catch (Exception e){</span>
+<span class="nc" id="L190">                    e.printStackTrace();</span>
+<span class="fc" id="L191">                }</span>
+
+<span class="fc" id="L193">            }</span>
+        });
+
+<span class="fc" id="L196">        layout.addView(view);</span>
+<span class="fc" id="L197">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span>Generated by the Android Gradle plugin 8.1.1</div></body></html>
